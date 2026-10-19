@@ -1,6 +1,7 @@
 package com.copycatsplus.copycats.fabric.mixin.foundation.copycat.multistate;
 
 import com.copycatsplus.copycats.foundation.copycat.multistate.IMultiStateCopycatBlockEntity;
+import com.copycatsplus.copycats.foundation.copycat.multistate.MaterialItemStorage;
 import com.copycatsplus.copycats.foundation.copycat.multistate.MultiStateCopycatBlockEntity;
 import com.copycatsplus.copycats.content.copycat.cogwheel.CopycatCogWheelBlockEntity;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
@@ -32,8 +33,11 @@ public class MultiStateCopycatBlockEntityMixin {
 
         @Override
         public @Nullable Object getRenderAttachmentData() {
-            synchronized (getMaterialItemStorage()) {
-                return Collections.synchronizedMap(getMaterialItemStorage().getMaterialMap());
+            MaterialItemStorage storage = getMaterialItemStorage();
+            if (storage == null)
+                return Collections.emptyMap();
+            synchronized (storage) {
+                return Collections.synchronizedMap(storage.getMaterialMap());
             }
         }
     }

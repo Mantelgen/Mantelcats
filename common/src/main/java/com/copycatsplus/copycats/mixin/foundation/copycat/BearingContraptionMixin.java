@@ -27,7 +27,7 @@ public class BearingContraptionMixin {
     )
     private void getSailsInCopycats(Pair<StructureTemplate.StructureBlockInfo, BlockEntity> capture, CallbackInfoReturnable<BlockState> cir) {
         BlockState state = capture.getKey().state();
-        if (state.getBlock() instanceof IMultiStateCopycatBlock && capture.getRight() instanceof IMultiStateCopycatBlockEntity copycatBE) {
+        if (state.getBlock() instanceof IMultiStateCopycatBlock && capture.getRight() instanceof IMultiStateCopycatBlockEntity copycatBE && copycatBE.getMaterialItemStorage() != null) {
             for (BlockState material : copycatBE.getMaterialItemStorage().getAllMaterials()) {
                 if (AllTags.AllBlockTags.WINDMILL_SAILS.matches(material)) {
                     cir.setReturnValue(material);

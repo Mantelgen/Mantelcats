@@ -55,7 +55,8 @@ public class MultiStateCopycatBlockEntity extends SmartBlockEntity implements IM
     @Override
     public void invalidate() {
         super.invalidate();
-        getMaterialItemStorage().clear();
+        if (materialItemStorage != null)
+            materialItemStorage.clear();
     }
 
     @Override
@@ -100,16 +101,20 @@ public class MultiStateCopycatBlockEntity extends SmartBlockEntity implements IM
                 return;
             }
             MaterialItemStorage.MaterialItem materialItem = materialItemStorage.getMaterialItem(firstProperty);
-            materialItem.setMaterial(copycatBlockEntity.getMaterial());
-            materialItem.setConsumedItem(copycatBlockEntity.getConsumedItem());
+            if (materialItem != null) {
+                materialItem.setMaterial(copycatBlockEntity.getMaterial());
+                materialItem.setConsumedItem(copycatBlockEntity.getConsumedItem());
+            }
 
             //Sets only the material so that it looks the same as the old blocks but wont give you free items
             for (String property : mscb.storageProperties()) {
                 if (mscb.partExists(getBlockState(), property)) {
                     if (!getMaterialItemStorage().hasCustomMaterial(property)) {
                         MaterialItemStorage.MaterialItem store = materialItemStorage.getMaterialItem(property);
-                        store.setMaterial(copycatBlockEntity.getMaterial());
-                        store.setConsumedItem(ItemStack.EMPTY);
+                        if (store != null) {
+                            store.setMaterial(copycatBlockEntity.getMaterial());
+                            store.setConsumedItem(ItemStack.EMPTY);
+                        }
                     }
                 }
             }

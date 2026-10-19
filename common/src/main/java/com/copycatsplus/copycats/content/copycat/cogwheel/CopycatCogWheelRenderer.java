@@ -4,7 +4,9 @@ import com.copycatsplus.copycats.CCCopycatPartialModels;
 import com.copycatsplus.copycats.foundation.copycat.model.kinetic.IKineticCopycatBlockRenderer;
 import com.copycatsplus.copycats.foundation.copycat.model.kinetic.KineticCopycatRenderer;
 import com.copycatsplus.copycats.foundation.copycat.multistate.IMultiStateCopycatBlockEntity;
+import com.copycatsplus.copycats.foundation.copycat.multistate.MaterialItemStorage;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.kinetics.simpleRelays.BracketedKineticBlockEntity;
 import com.simibubi.create.content.kinetics.simpleRelays.BracketedKineticBlockEntityRenderer;
 import com.simibubi.create.content.kinetics.simpleRelays.ICogWheel;
@@ -31,7 +33,8 @@ public class CopycatCogWheelRenderer extends BracketedKineticBlockEntityRenderer
         if (VisualizationManager.supportsVisualization(be.getLevel()))
             return;
 
-        RenderType type = getRenderType(be, ((IMultiStateCopycatBlockEntity) be).getMaterialItemStorage().getMaterialItem(CopycatCogWheelBlock.Part.COGWHEEL.getSerializedName()).material());
+        MaterialItemStorage.MaterialItem cogwheelItem = ((IMultiStateCopycatBlockEntity) be).getMaterialItemOrNull(CopycatCogWheelBlock.Part.COGWHEEL.getSerializedName());
+        RenderType type = getRenderType(be, cogwheelItem == null ? AllBlocks.COPYCAT_BASE.getDefaultState() : cogwheelItem.material());
 
         if (!ICogWheel.isLargeCog(be.getBlockState())) {
             super.renderSafe(be, partialTicks, ms, buffer, light, overlay);
@@ -43,17 +46,20 @@ public class CopycatCogWheelRenderer extends BracketedKineticBlockEntityRenderer
         // Large cogs sometimes have to offset their teeth by 11.25 degrees in order to
         // mesh properly
 
-        RenderType shaftType = getRenderType(be, ((IMultiStateCopycatBlockEntity) be).getMaterialItemStorage().getMaterialItem(CopycatCogWheelBlock.Part.SHAFT.getSerializedName()).material());
+        MaterialItemStorage.MaterialItem shaftItem = ((IMultiStateCopycatBlockEntity) be).getMaterialItemOrNull(CopycatCogWheelBlock.Part.SHAFT.getSerializedName());
+        RenderType shaftType = getRenderType(be, shaftItem == null ? AllBlocks.COPYCAT_BASE.getDefaultState() : shaftItem.material());
 
         Direction.Axis axis = getRotationAxisOf(be);
-        renderRotatingBuffer(be,
-                KineticCopycatRenderer.getRenderedBuffer(CCCopycatPartialModels.LARGE_COGWHEEL, (IMultiStateCopycatBlockEntity) be, "cogwheel"),
-                ms, buffer.getBuffer(type), light);
+        if (type != null)
+            renderRotatingBuffer(be,
+                    KineticCopycatRenderer.getRenderedBuffer(CCCopycatPartialModels.LARGE_COGWHEEL, (IMultiStateCopycatBlockEntity) be, "cogwheel"),
+                    ms, buffer.getBuffer(type), light);
 
         float angle = getAngleForLargeCogShaft(be, axis);
         SuperByteBuffer shaft =
                 KineticCopycatRenderer.getRenderedBuffer(CCCopycatPartialModels.SHAFT, (IMultiStateCopycatBlockEntity) be, "shaft");
         kineticRotationTransform(shaft, be, axis, angle, light);
-        shaft.renderInto(ms, buffer.getBuffer(shaftType));
+        if (shaftType != null)
+            shaft.renderInto(ms, buffer.getBuffer(shaftType));
     }
 }

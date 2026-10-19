@@ -196,7 +196,10 @@ public interface IMultiStateCopycatBlock extends ICopycatBlock, IStateType {
             IMultiStateCopycatBlockEntity be = getCopycatBlockEntity(level, pos);
             if (be == null)
                 return InteractionResult.PASS;
-            be.setEnableCT(property, !be.getMaterialItemStorage().getMaterialItem(property).enableCT());
+            MaterialItemStorage.MaterialItem materialItem = be.getMaterialItemOrNull(property);
+            if (materialItem == null)
+                return InteractionResult.PASS;
+            be.setEnableCT(property, !materialItem.enableCT());
             BlockEntityUtils.redraw((BlockEntity) be);
             return InteractionResult.SUCCESS;
         }
@@ -220,13 +223,15 @@ public interface IMultiStateCopycatBlock extends ICopycatBlock, IStateType {
         if (!partExists(state, property))
             return InteractionResult.PASS;
 
-        MaterialItemStorage.MaterialItem material = copycatBE.getMaterialItemStorage().getMaterialItem(property);
+        MaterialItemStorage.MaterialItem material = copycatBE.getMaterialItemOrNull(property);
+        if (material == null)
+            return InteractionResult.PASS;
         ItemStack consumedItem = material.consumedItem();
         if (!consumedItem.isEmpty()) {
             for (String prop : copycatBE.getMaterialItemStorage().getAllProperties()) {
                 if (prop.equals(property)) continue;
                 MaterialItemStorage.MaterialItem materialItem = copycatBE.getMaterialItemStorage().getMaterialItem(prop);
-                if (materialItem.material().getBlock().equals(material.material().getBlock()) && materialItem.consumedItem().isEmpty()) {
+                if (materialItem != null && materialItem.material().getBlock().equals(material.material().getBlock()) && materialItem.consumedItem().isEmpty()) {
                     copycatBE.setConsumedItem(prop, consumedItem);
                     consumedItem = ItemStack.EMPTY;
                     break;
@@ -279,11 +284,12 @@ public interface IMultiStateCopycatBlock extends ICopycatBlock, IStateType {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
         IMultiStateCopycatBlockEntity copycatBE = getCopycatBlockEntity(level, pos);
-        if (copycatBE == null)
+        if (copycatBE == null || copycatBE.getMaterialItemStorage() == null)
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         if (!partExists(state, property))
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-        if (copycatBE.getMaterialItemStorage().getMaterialItem(property).material()
+        MaterialItemStorage.MaterialItem existing = copycatBE.getMaterialItemOrNull(property);
+        if (existing != null && existing.material()
                 .is(material.getBlock())) {
             if (!copycatBE.cycleMaterial(property))
                 return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
@@ -333,7 +339,7 @@ public interface IMultiStateCopycatBlock extends ICopycatBlock, IStateType {
         if (appliedState == null)
             return;
         IMultiStateCopycatBlockEntity copycatBE = getCopycatBlockEntity(level, pos);
-        if (copycatBE == null)
+        if (copycatBE == null || copycatBE.getMaterialItemStorage() == null)
             return;
         for (String property : this.storageProperties()) {
             if (!partExists(state, property))
@@ -369,7 +375,7 @@ public interface IMultiStateCopycatBlock extends ICopycatBlock, IStateType {
             return;
         if (!isMoving) {
             IMultiStateCopycatBlockEntity copycatBE = getCopycatBlockEntity(level, pos);
-            if (copycatBE != null)
+            if (copycatBE != null && copycatBE.getMaterialItemStorage() != null)
                 copycatBE.getMaterialItemStorage().getAllConsumedItems().forEach(stack -> Block.popResource(level, pos, stack));
         }
         handler.handle(state, level, pos, newState, isMoving);
@@ -380,15 +386,19 @@ public interface IMultiStateCopycatBlock extends ICopycatBlock, IStateType {
     default BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         if (player.isCreative()) {
             IMultiStateCopycatBlockEntity copycatBE = getCopycatBlockEntity(level, pos);
-            if (copycatBE != null)
-                copycatBE.getMaterialItemStorage().getAllProperties().forEach(key -> copycatBE.getMaterialItemStorage().getMaterialItem(key).setConsumedItem(ItemStack.EMPTY));
+            if (copycatBE != null && copycatBE.getMaterialItemStorage() != null)
+                copycatBE.getMaterialItemStorage().getAllProperties().forEach(key -> {
+                    MaterialItemStorage.MaterialItem item = copycatBE.getMaterialItemStorage().getMaterialItem(key);
+                    if (item != null)
+                        item.setConsumedItem(ItemStack.EMPTY);
+                });
         }
         return state;
     }
 
     default void fillEmptyParts(Level level, BlockPos pos, BlockState state, BlockState material) {
         IMultiStateCopycatBlockEntity copycatBE = getCopycatBlockEntity(level, pos);
-        if (copycatBE == null) return;
+        if (copycatBE == null || copycatBE.getMaterialItemStorage() == null) return;
         for (String property : copycatBE.getMaterialItemStorage().getAllProperties()) {
             if (copycatBE.getMaterialItemStorage().hasCustomMaterial(property)) continue;
             if (!partExists(state, property)) continue;
@@ -424,9 +434,11 @@ public interface IMultiStateCopycatBlock extends ICopycatBlock, IStateType {
     VoxelShape getPartialFaceShape(BlockGetter level, BlockState state, String property, Direction face);
 
     static BlockState getMaterial(BlockGetter reader, BlockPos targetPos, String property) {
-        if (reader.getBlockEntity(targetPos) instanceof IMultiStateCopycatBlockEntity cbe)
-            if (cbe.getMaterialItemStorage().getMaterialItem(property) != null)
-                return cbe.getMaterialItemStorage().getMaterialItem(property).material();
+        if (reader.getBlockEntity(targetPos) instanceof IMultiStateCopycatBlockEntity cbe) {
+            MaterialItemStorage.MaterialItem item = cbe.getMaterialItemOrNull(property);
+            if (item != null)
+                return item.material();
+        }
         return Blocks.AIR.defaultBlockState();
     }
 
@@ -518,7 +530,7 @@ public interface IMultiStateCopycatBlock extends ICopycatBlock, IStateType {
                     .getColor(ICopycatBlock.getMaterial(pLevel, pPos), pLevel, pPos, pTintIndex);
             BlockEntity be = pLevel.getBlockEntity(pPos);
             if (tint == -1) {
-                if (be instanceof IMultiStateCopycatBlockEntity mscb) {
+                if (be instanceof IMultiStateCopycatBlockEntity mscb && mscb.getMaterialItemStorage() != null) {
                     for (String property : mscb.getMaterialItemStorage().getAllProperties()) {
                         int anyTint = Minecraft.getInstance()
                                 .getBlockColors()

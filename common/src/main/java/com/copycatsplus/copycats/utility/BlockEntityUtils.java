@@ -47,6 +47,8 @@ public class BlockEntityUtils {
     public static int getLightEmission(BlockEntity blockEntity) {
         if (blockEntity instanceof IMultiStateCopycatBlockEntity multiStateBE) {
             int light = 0;
+            if (multiStateBE.getMaterialItemStorage() == null)
+                return light;
             for (BlockState material : multiStateBE.getMaterialItemStorage().getAllMaterials()) {
                 light = Math.max(light, material.getLightEmission(multiStateBE.getLevel(), multiStateBE.getBlockPos()));
             }

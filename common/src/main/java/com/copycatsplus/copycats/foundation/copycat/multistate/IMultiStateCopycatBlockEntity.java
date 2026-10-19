@@ -49,6 +49,17 @@ import java.util.Set;
 public interface IMultiStateCopycatBlockEntity extends ICopycatBlockEntity {
     MaterialItemStorage getMaterialItemStorage();
 
+    /**
+     * Null-safe material item lookup that tolerates a missing storage or property,
+     * e.g. when querying a stale, partially initialized, or cleared block entity.
+     */
+    default @Nullable MaterialItemStorage.MaterialItem getMaterialItemOrNull(String property) {
+        MaterialItemStorage storage = getMaterialItemStorage();
+        if (storage == null || property == null)
+            return null;
+        return storage.getMaterialItem(property);
+    }
+
     @ApiStatus.OverrideOnly
     void setMaterialItemStorageInternal(MaterialItemStorage storage);
 
@@ -64,32 +75,41 @@ public interface IMultiStateCopycatBlockEntity extends ICopycatBlockEntity {
 
     @Override
     default BlockState getMaterial() {
-        return getMaterialItemStorage().getMaterialItem(getBlock().defaultProperty()).material();
+        MaterialItemStorage.MaterialItem item = getMaterialItemOrNull(getBlock().defaultProperty());
+        return item == null ? AllBlocks.COPYCAT_BASE.getDefaultState() : item.material();
     }
 
     @Override
     default ItemStack getConsumedItem() {
-        return getMaterialItemStorage().getMaterialItem(getBlock().defaultProperty()).consumedItem();
+        MaterialItemStorage.MaterialItem item = getMaterialItemOrNull(getBlock().defaultProperty());
+        return item == null ? ItemStack.EMPTY : item.consumedItem();
     }
 
     @Override
     default boolean isCTEnabled() {
-        return getMaterialItemStorage().getMaterialItem(getBlock().defaultProperty()).enableCT();
+        MaterialItemStorage.MaterialItem item = getMaterialItemOrNull(getBlock().defaultProperty());
+        return item == null || item.enableCT();
     }
 
     @Override
     default void setMaterialInternal(BlockState material) {
-        getMaterialItemStorage().getMaterialItem(getBlock().defaultProperty()).setMaterial(material);
+        MaterialItemStorage.MaterialItem item = getMaterialItemOrNull(getBlock().defaultProperty());
+        if (item != null)
+            item.setMaterial(material);
     }
 
     @Override
     default void setConsumedItemInternal(ItemStack consumedItem) {
-        getMaterialItemStorage().getMaterialItem(getBlock().defaultProperty()).setConsumedItem(consumedItem);
+        MaterialItemStorage.MaterialItem item = getMaterialItemOrNull(getBlock().defaultProperty());
+        if (item != null)
+            item.setConsumedItem(consumedItem);
     }
 
     @Override
     default void setCTEnabledInternal(boolean value) {
-        getMaterialItemStorage().getMaterialItem(getBlock().defaultProperty()).setEnableCT(value);
+        MaterialItemStorage.MaterialItem item = getMaterialItemOrNull(getBlock().defaultProperty());
+        if (item != null)
+            item.setEnableCT(value);
     }
 
     @Override
@@ -102,7 +122,10 @@ public interface IMultiStateCopycatBlockEntity extends ICopycatBlockEntity {
         return new IMultiStateCopycatBlock() {
             @Override
             public String defaultProperty() {
-                return getMaterialItemStorage().getAllProperties().stream().findFirst().orElse("material");
+                MaterialItemStorage storage = getMaterialItemStorage();
+                if (storage == null)
+                    return "material";
+                return storage.getAllProperties().stream().findFirst().orElse("material");
             }
 
             @Override
@@ -159,14 +182,20 @@ public interface IMultiStateCopycatBlockEntity extends ICopycatBlockEntity {
 
     @Override
     default boolean hasCustomMaterial() {
-        return !getMaterialItemStorage().getAllMaterials().stream().allMatch(state -> state.is(AllBlocks.COPYCAT_BASE.get()));
+        MaterialItemStorage storage = getMaterialItemStorage();
+        return storage != null
+                && !storage.getAllMaterials().stream().allMatch(state -> state.is(AllBlocks.COPYCAT_BASE.get()));
     }
 
     default void setMaterial(String property, BlockState blockState) {
+        MaterialItemStorage storage = getMaterialItemStorage();
+        if (storage == null)
+            return;
         BlockState wrapperState = getBlockState();
 
+        MaterialItemStorage.MaterialItem materialItem = storage.getMaterialItem(property);
         BlockState finalMaterial = blockState;
-        if (!getMaterialItemStorage().getMaterialItem(property).material().is(finalMaterial.getBlock()))
+        if (materialItem == null || !materialItem.material().is(finalMaterial.getBlock()))
             for (Direction side : Iterate.directions) {
                 BlockPos neighbour = getBlockPos().relative(side);
                 BlockState neighbourState = getLevel().getBlockState(neighbour);
@@ -174,21 +203,29 @@ public interface IMultiStateCopycatBlockEntity extends ICopycatBlockEntity {
                     continue;
                 if (!(getLevel().getBlockEntity(neighbour) instanceof IMultiStateCopycatBlockEntity cbe))
                     continue;
-                BlockState otherMaterial = cbe.getMaterialItemStorage().getMaterialItem(property).material();
+                MaterialItemStorage.MaterialItem otherItem = cbe.getMaterialItemOrNull(property);
+                if (otherItem == null)
+                    continue;
+                BlockState otherMaterial = otherItem.material();
                 if (!otherMaterial.is(blockState.getBlock()))
                     continue;
                 blockState = otherMaterial;
                 break;
             }
-        MaterialItemStorage.MaterialItem materialItem = getMaterialItemStorage().getMaterialItem(property);
-        materialItem.setMaterial(blockState);
-        getMaterialItemStorage().storeMaterialItem(property, materialItem);
+        if (materialItem == null)
+            materialItem = new MaterialItemStorage.MaterialItem(blockState, ItemStack.EMPTY);
+        else
+            materialItem.setMaterial(blockState);
+        storage.storeMaterialItem(property, materialItem);
 
         BlockEntityUtils.redraw((BlockEntity) this);
     }
 
     default boolean cycleMaterial(String property) {
-        BlockState material = getMaterialItemStorage().getMaterialItem(property).material();
+        MaterialItemStorage.MaterialItem item = getMaterialItemOrNull(property);
+        if (item == null)
+            return false;
+        BlockState material = item.material();
         if (material.hasProperty(TrapDoorBlock.HALF) && material.getOptionalValue(TrapDoorBlock.OPEN)
                 .orElse(false))
             setMaterial(property, material.cycle(TrapDoorBlock.HALF));
@@ -213,19 +250,28 @@ public interface IMultiStateCopycatBlockEntity extends ICopycatBlockEntity {
     }
 
     default void setConsumedItem(String property, ItemStack itemStack) {
-        getMaterialItemStorage().getMaterialItem(property).setConsumedItem(itemStack);
+        MaterialItemStorage.MaterialItem item = getMaterialItemOrNull(property);
+        if (item == null)
+            return;
+        item.setConsumedItem(itemStack);
         notifyUpdate();
     }
 
     default void setEnableCT(String property, boolean value) {
-        getMaterialItemStorage().getMaterialItem(property).setEnableCT(value);
+        MaterialItemStorage.MaterialItem item = getMaterialItemOrNull(property);
+        if (item == null)
+            return;
+        item.setEnableCT(value);
         notifyUpdate();
     }
 
     @Override
     default ItemRequirement getRequiredItems(BlockState state) {
+        MaterialItemStorage storage = getMaterialItemStorage();
+        if (storage == null)
+            return new ItemRequirement(java.util.List.of());
         return new ItemRequirement(
-                getMaterialItemStorage().getAllConsumedItems().stream()
+                storage.getAllConsumedItems().stream()
                         .map(stack -> new ItemRequirement.StackRequirement(stack, ItemRequirement.ItemUseType.CONSUME))
                         .toList()
         );
@@ -233,15 +279,20 @@ public interface IMultiStateCopycatBlockEntity extends ICopycatBlockEntity {
 
     @Override
     default void transform(BlockEntity blockEntity, StructureTransform transform) {
+        MaterialItemStorage storage = getMaterialItemStorage();
+        if (storage == null)
+            return;
         getBlock().transformStorage(this.getBlockState(), this, transform);
-        for (String key : getMaterialItemStorage().getAllProperties()) {
-            getMaterialItemStorage().getMaterialItem(key).setMaterial(transform.apply(getMaterialItemStorage().getMaterialItem(key).material()));
+        for (String key : storage.getAllProperties()) {
+            MaterialItemStorage.MaterialItem item = storage.getMaterialItem(key);
+            if (item != null)
+                item.setMaterial(transform.apply(item.material()));
         }
         notifyUpdate();
     }
 
     static void read(IMultiStateCopycatBlockEntity self, CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
-        if (self.getBlockState().getBlock() instanceof IMultiStateCopycatBlock) {
+        if (self.getBlockState().getBlock() instanceof IMultiStateCopycatBlock && self.getMaterialItemStorage() != null) {
             boolean anyUpdated = self.getMaterialItemStorage().deserialize(tag.getCompound("material_data"), registries);
 
             if (anyUpdated)
@@ -251,10 +302,12 @@ public interface IMultiStateCopycatBlockEntity extends ICopycatBlockEntity {
 
     static void writeSafe(IMultiStateCopycatBlockEntity self, CompoundTag tag, HolderLookup.Provider registries) {
         BlockEntityUtils.saveMetadata((BlockEntity) self, tag);
-        tag.put("material_data", self.getMaterialItemStorage().serializeSafe(registries));
+        if (self.getMaterialItemStorage() != null)
+            tag.put("material_data", self.getMaterialItemStorage().serializeSafe(registries));
     }
 
     static void write(IMultiStateCopycatBlockEntity self, CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
-        tag.put("material_data", self.getMaterialItemStorage().serialize(registries));
+        if (self.getMaterialItemStorage() != null)
+            tag.put("material_data", self.getMaterialItemStorage().serialize(registries));
     }
 }

@@ -13,6 +13,7 @@ import com.copycatsplus.copycats.foundation.copycat.multistate.WaterloggedMultiS
 import com.copycatsplus.copycats.utility.BlockFaceUtils;
 import com.copycatsplus.copycats.utility.BlockUtils;
 import com.google.common.collect.ImmutableMap;
+import com.simibubi.create.AllBlocks;
 import com.simibubi.create.api.schematic.requirement.SpecialBlockItemRequirement;
 import com.simibubi.create.content.contraptions.StructureTransform;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
@@ -270,25 +271,25 @@ public class CopycatHalfLayerBlock extends WaterloggedMultiStateCopycatBlock imp
             Half half = state.getValue(HALF);
             return CopycatTransformableState.create(t -> {
                 t.addPart(axis == Axis.X ? 12 : 8, half == Half.BOTTOM ? 0 : 16, axis == Axis.Z ? 12 : 8)
-                        .setData(be.getMaterialItemStorage().getMaterialItem(POSITIVE_LAYERS.getName()));
+                        .setData(materialOrDefault(be.getMaterialItemStorage().getMaterialItem(POSITIVE_LAYERS.getName())));
                 t.addPart(axis == Axis.X ? 4 : 8, half == Half.BOTTOM ? 0 : 16, axis == Axis.Z ? 4 : 8)
-                        .setData(be.getMaterialItemStorage().getMaterialItem(NEGATIVE_LAYERS.getName()));
+                        .setData(materialOrDefault(be.getMaterialItemStorage().getMaterialItem(NEGATIVE_LAYERS.getName())));
             });
         } else if (state.is(CCBlocks.COPYCAT_VERTICAL_HALF_LAYER.get())) {
             Direction facing = state.getValue(CopycatVerticalHalfLayerBlock.FACING);
             return CopycatTransformableState.create(t -> {
                 t.addPart(12, 8, 16).rotateY(facing)
-                        .setData(be.getMaterialItemStorage().getMaterialItem(POSITIVE_LAYERS.getName()));
+                        .setData(materialOrDefault(be.getMaterialItemStorage().getMaterialItem(POSITIVE_LAYERS.getName())));
                 t.addPart(4, 8, 16).rotateY(facing)
-                        .setData(be.getMaterialItemStorage().getMaterialItem(NEGATIVE_LAYERS.getName()));
+                        .setData(materialOrDefault(be.getMaterialItemStorage().getMaterialItem(NEGATIVE_LAYERS.getName())));
             });
         } else if (state.is(CCBlocks.COPYCAT_STACKED_HALF_LAYER.get())) {
             Direction facing = state.getValue(CopycatStackedHalfLayerBlock.FACING);
             return CopycatTransformableState.create(t -> {
                 t.addPart(8, 12, 16).rotateY(facing)
-                        .setData(be.getMaterialItemStorage().getMaterialItem(POSITIVE_LAYERS.getName()));
+                        .setData(materialOrDefault(be.getMaterialItemStorage().getMaterialItem(POSITIVE_LAYERS.getName())));
                 t.addPart(8, 4, 16).rotateY(facing)
-                        .setData(be.getMaterialItemStorage().getMaterialItem(NEGATIVE_LAYERS.getName()));
+                        .setData(materialOrDefault(be.getMaterialItemStorage().getMaterialItem(NEGATIVE_LAYERS.getName())));
             });
         } else {
             throw new IllegalArgumentException("Unsupported block state");
@@ -333,19 +334,23 @@ public class CopycatHalfLayerBlock extends WaterloggedMultiStateCopycatBlock imp
             Axis axis = firstPart.getHorizontalFacing().getAxis();
             for (CopycatTransformableState.Part<MaterialItemStorage.MaterialItem> part : transformableState.parts) {
                 boolean positive = part.vector.get(axis) > 8;
-                be.getMaterialItemStorage().storeMaterialItem(positive ? POSITIVE_LAYERS.getName() : NEGATIVE_LAYERS.getName(), part.data);
+                be.getMaterialItemStorage().storeMaterialItem(positive ? POSITIVE_LAYERS.getName() : NEGATIVE_LAYERS.getName(), materialOrDefault(part.data));
             }
         } else if (firstPart.vector.getY() == 8) {
             for (CopycatTransformableState.Part<MaterialItemStorage.MaterialItem> part : transformableState.parts) {
                 boolean right = part.isRight(facing);
-                be.getMaterialItemStorage().storeMaterialItem(right ? NEGATIVE_LAYERS.getName() : POSITIVE_LAYERS.getName(), part.data);
+                be.getMaterialItemStorage().storeMaterialItem(right ? NEGATIVE_LAYERS.getName() : POSITIVE_LAYERS.getName(), materialOrDefault(part.data));
             }
         } else {
             for (CopycatTransformableState.Part<MaterialItemStorage.MaterialItem> part : transformableState.parts) {
                 boolean top = part.isTop();
-                be.getMaterialItemStorage().storeMaterialItem(top ? POSITIVE_LAYERS.getName() : NEGATIVE_LAYERS.getName(), part.data);
+                be.getMaterialItemStorage().storeMaterialItem(top ? POSITIVE_LAYERS.getName() : NEGATIVE_LAYERS.getName(), materialOrDefault(part.data));
             }
         }
+    }
+
+    private static MaterialItemStorage.MaterialItem materialOrDefault(MaterialItemStorage.MaterialItem item) {
+        return item == null ? new MaterialItemStorage.MaterialItem(AllBlocks.COPYCAT_BASE.getDefaultState(), ItemStack.EMPTY) : item;
     }
 
     @Override
