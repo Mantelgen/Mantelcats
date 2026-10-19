@@ -337,10 +337,13 @@ public class CopycatBoardBlock extends WaterloggedMultiStateCopycatBlock impleme
 
     @Override
     public void transformStorage(BlockState state, IMultiStateCopycatBlockEntity be, StructureTransform transform) {
-        be.getMaterialItemStorage().remapStorage(key -> directionToProperty(transformFacing(transform, propertyToDirection(key))));
+        be.getMaterialItemStorage().remapStorage(key -> {
+            Direction direction = propertyToDirection(key);
+            return direction == null ? key : directionToProperty(transformFacing(transform, direction));
+        });
     }
 
-    private static Direction propertyToDirection(String property) {
+    private static @Nullable Direction propertyToDirection(String property) {
         return switch (property) {
             case "up" -> Direction.UP;
             case "down" -> Direction.DOWN;
@@ -348,7 +351,7 @@ public class CopycatBoardBlock extends WaterloggedMultiStateCopycatBlock impleme
             case "south" -> Direction.SOUTH;
             case "east" -> Direction.EAST;
             case "west" -> Direction.WEST;
-            default -> throw new IllegalStateException("Unexpected value: " + property);
+            default -> null;
         };
     }
 

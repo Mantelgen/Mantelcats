@@ -140,7 +140,7 @@ public class CopycatByteBlock extends WaterloggedMultiStateCopycatBlock implemen
     @Override
     public int getColorIndex(String property) {
         Byte bite = byteMap.get(property);
-        return bite.x ^ bite.y ^ bite.z ? 1 : 0;
+        return bite != null && bite.x ^ bite.y ^ bite.z ? 1 : 0;
     }
 
     @Override
@@ -151,6 +151,8 @@ public class CopycatByteBlock extends WaterloggedMultiStateCopycatBlock implemen
     @Override
     public Vec3i getVectorFromProperty(BlockState state, String property) {
         Byte bite = byteMap.get(property);
+        if (bite == null)
+            return Vec3i.ZERO;
         return new Vec3i(bite.x ? 1 : 0, bite.y ? 1 : 0, bite.z ? 1 : 0);
     }
 
