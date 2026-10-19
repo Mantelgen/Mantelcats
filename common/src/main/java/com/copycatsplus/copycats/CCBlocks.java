@@ -5,6 +5,8 @@ import com.copycatsplus.copycats.config.FeatureCategory;
 import com.copycatsplus.copycats.config.FeatureToggle;
 import com.copycatsplus.copycats.content.copycat.byte_panel.CopycatBytePanelBlock;
 import com.copycatsplus.copycats.content.copycat.byte_panel.CopycatMultiBytePanelModelCore;
+import com.copycatsplus.copycats.content.copycat.corner_panel.CopycatCornerPanelBlock;
+import com.copycatsplus.copycats.content.copycat.corner_panel.CopycatMultiCornerPanelModelCore;
 import com.copycatsplus.copycats.content.copycat.cogwheel.CopycatCogWheelModelCore;
 import com.copycatsplus.copycats.content.copycat.cogwheel.CopycatLargeCogWheelModelCore;
 import com.copycatsplus.copycats.content.copycat.flat_pane.CopycatFlatPaneBlock;
@@ -272,6 +274,20 @@ public class CCBlocks {
                     .transform(customItemModel("copycat_base", "byte_panel"))
                     .register();
 
+    public static final BlockEntry<CopycatCornerPanelBlock> COPYCAT_CORNER_PANEL =
+            REGISTRATE.block("copycat_corner_panel", CopycatCornerPanelBlock::new)
+                    .transform(CCBuilderTransformers.multiCopycat())
+                    .transform(FeatureToggle.register(FeatureCategory.MULTISTATES))
+                    .onRegister(onClient(() -> createBlockModel(CopycatMultiCornerPanelModelCore::new)))
+                    .item()
+                    .onRegister(CopycatDescription.register(
+                            CopycatCharacteristics.COPYCAT,
+                            CopycatCharacteristics.CT_TOGGLE,
+                            CopycatCharacteristics.MULTI_STATE
+                    ))
+                    .transform(customItemModel("copycat_base", "corner_panel"))
+                    .register();
+
     public static final BlockEntry<CopycatFenceBlock> COPYCAT_FENCE =
             REGISTRATE.block("copycat_fence", CopycatFenceBlock::new)
                     .transform(CCBuilderTransformers.copycat())
@@ -504,7 +520,7 @@ public class CCBlocks {
 
     public static final BlockEntry<CopycatSliceBlock> COPYCAT_SLICE =
             REGISTRATE.block("copycat_slice", CopycatSliceBlock::new)
-                    .transform(CCBuilderTransformers.copycat())
+                    .transform(CCBuilderTransformers.multiCopycat())
                     .transform(FeatureToggle.register(FeatureCategory.STACKABLES))
                     .onRegister(onClient(() -> createBlockModel(CopycatSliceModelCore::new)))
                     .loot(CCLootGen.build(CCLootGen.lootForLayers()))
@@ -512,14 +528,15 @@ public class CCBlocks {
                     .onRegister(CopycatDescription.register(
                             CopycatCharacteristics.COPYCAT,
                             CopycatCharacteristics.CT_TOGGLE,
-                            CopycatCharacteristics.STACKABLE
+                            CopycatCharacteristics.STACKABLE,
+                            CopycatCharacteristics.MULTI_STATE
                     ))
                     .transform(customItemModel("copycat_base", "slice"))
                     .register();
 
     public static final BlockEntry<CopycatCornerSliceBlock> COPYCAT_CORNER_SLICE =
             REGISTRATE.block("copycat_corner_slice", CopycatCornerSliceBlock::new)
-                    .transform(CCBuilderTransformers.copycat())
+                    .transform(CCBuilderTransformers.multiCopycat())
                     .transform(FeatureToggle.register(FeatureCategory.STACKABLES))
                     .onRegister(onClient(() -> createBlockModel(CopycatCornerSliceModelCore::new)))
                     .loot(CCLootGen.build(CCLootGen.lootForLayers()))
@@ -527,7 +544,8 @@ public class CCBlocks {
                     .onRegister(CopycatDescription.register(
                             CopycatCharacteristics.COPYCAT,
                             CopycatCharacteristics.CT_TOGGLE,
-                            CopycatCharacteristics.STACKABLE
+                            CopycatCharacteristics.STACKABLE,
+                            CopycatCharacteristics.MULTI_STATE
                     ))
                     .transform(customItemModel("copycat_base", "corner_slice"))
                     .register();
@@ -595,7 +613,7 @@ public class CCBlocks {
 
     public static final BlockEntry<CopycatVerticalSliceBlock> COPYCAT_VERTICAL_SLICE =
             REGISTRATE.block("copycat_vertical_slice", CopycatVerticalSliceBlock::new)
-                    .transform(CCBuilderTransformers.copycat())
+                    .transform(CCBuilderTransformers.multiCopycat())
                     .transform(FeatureToggle.register(FeatureCategory.STACKABLES))
                     .onRegister(onClient(() -> createBlockModel(CopycatVerticalSliceModelCore::new)))
                     .loot(CCLootGen.build(CCLootGen.lootForLayers()))
@@ -603,7 +621,8 @@ public class CCBlocks {
                     .onRegister(CopycatDescription.register(
                             CopycatCharacteristics.COPYCAT,
                             CopycatCharacteristics.CT_TOGGLE,
-                            CopycatCharacteristics.STACKABLE
+                            CopycatCharacteristics.STACKABLE,
+                            CopycatCharacteristics.MULTI_STATE
                     ))
                     .transform(customItemModel("copycat_base", "vertical_slice"))
                     .register();

@@ -1,10 +1,12 @@
 package com.copycatsplus.copycats.content.copycat.corner_slice;
 
+import com.copycatsplus.copycats.CCBlocks;
 import com.copycatsplus.copycats.CCShapes;
 import com.copycatsplus.copycats.Copycats;
-import com.copycatsplus.copycats.foundation.copycat.CCWaterloggedCopycatBlock;
+import com.copycatsplus.copycats.content.copycat.slice.CopycatSliceBlock;
 import com.copycatsplus.copycats.foundation.copycat.ICopycatBlock;
-import com.copycatsplus.copycats.foundation.copycat.IStateType;
+import com.copycatsplus.copycats.foundation.copycat.multistate.IMultiStateCopycatBlockEntity;
+import com.copycatsplus.copycats.foundation.copycat.multistate.WaterloggedMultiStateCopycatBlock;
 import com.copycatsplus.copycats.utility.BlockUtils;
 import com.simibubi.create.api.schematic.requirement.SpecialBlockItemRequirement;
 import com.simibubi.create.content.contraptions.StructureTransform;
@@ -15,6 +17,7 @@ import net.createmod.catnip.data.Pair;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -29,6 +32,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.*;
 import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
@@ -37,12 +42,32 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static net.minecraft.core.Direction.Axis;
 
+/**
+ * A corner-cube copycat that occupies a 2L-sized cube at a block corner, where L is the
+ * {@link #LAYERS} value. The cube is subdivided into eight L-sized cells, one per octant.
+ * Each cell carries an independent material, named by its octant in the canonical
+ * SOUTH-facing, BOTTOM-half orientation (cube in the south-east-bottom corner), using the
+ * same octant naming as the copycat byte.
+ */
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class CopycatCornerSliceBlock extends CCWaterloggedCopycatBlock implements IStateType, SpecialBlockItemRequirement {
+public class CopycatCornerSliceBlock extends WaterloggedMultiStateCopycatBlock implements SpecialBlockItemRequirement {
+
+    public static final String BOTTOM_SOUTH_EAST = "bottom_southeast";
+    public static final String BOTTOM_SOUTH_WEST = "bottom_southwest";
+    public static final String BOTTOM_NORTH_EAST = "bottom_northeast";
+    public static final String BOTTOM_NORTH_WEST = "bottom_northwest";
+    public static final String TOP_SOUTH_EAST = "top_southeast";
+    public static final String TOP_SOUTH_WEST = "top_southwest";
+    public static final String TOP_NORTH_EAST = "top_northeast";
+    public static final String TOP_NORTH_WEST = "top_northwest";
+    public static final List<String> PROPERTIES = List.of(
+            BOTTOM_SOUTH_EAST, BOTTOM_SOUTH_WEST, BOTTOM_NORTH_EAST, BOTTOM_NORTH_WEST,
+            TOP_SOUTH_EAST, TOP_SOUTH_WEST, TOP_NORTH_EAST, TOP_NORTH_WEST);
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final IntegerProperty LAYERS = BlockStateProperties.LAYERS;
@@ -54,6 +79,65 @@ public class CopycatCornerSliceBlock extends CCWaterloggedCopycatBlock implement
                 .setValue(FACING, Direction.NORTH)
                 .setValue(LAYERS, 1)
                 .setValue(HALF, Half.BOTTOM));
+    }
+
+    @Override
+    public String defaultProperty() {
+        return BOTTOM_SOUTH_EAST;
+    }
+
+    @Override
+    public Vec3i vectorScale(BlockState state) {
+        return new Vec3i(2, 2, 2);
+    }
+
+    @Override
+    public Set<String> storageProperties() {
+        return Set.copyOf(PROPERTIES);
+    }
+
+    @Override
+    public int getColorIndex(String property) {
+        return PROPERTIES.indexOf(property);
+    }
+
+    @Override
+    public boolean partExists(BlockState state, String property) {
+        return PROPERTIES.contains(property);
+    }
+
+    @Override
+    public Vec3i getVectorFromProperty(BlockState state, String property) {
+        int x = property.contains("east") ? 1 : 0;
+        int y = property.startsWith("top") ? 1 : 0;
+        int z = property.contains("south") ? 1 : 0;
+        return new Vec3i(x, y, z);
+    }
+
+    @Override
+    public String getPropertyFromRender(String renderingProperty, BlockState state, BlockGetter level, Vec3i vector, BlockPos blockPos) {
+        return renderingProperty;
+    }
+
+    /**
+     * The canonical-orientation cell box (block-space, in sixteenths) of the given part.
+     */
+    public static AABB canonicalCellBox(String property, int layers) {
+        int l = layers;
+        int x1 = property.contains("east") ? 16 - l : 16 - 2 * l;
+        int y1 = property.startsWith("top") ? l : 0;
+        int z1 = property.contains("south") ? 16 - l : 16 - 2 * l;
+        return new AABB(x1, y1, z1, x1 + l, y1 + l, z1 + l);
+    }
+
+    @Override
+    public String getPropertyFromInteraction(BlockState state, BlockGetter level, Vec3i hitLocation, BlockPos blockPos, Direction facing, Vec3 unscaledHit) {
+        int layers = state.getValue(LAYERS);
+        Vec3 hit = CopycatSliceBlock.unorientPoint(state.getValue(FACING), state.getValue(HALF), unscaledHit.scale(16));
+        boolean east = hit.x >= 16 - layers;
+        boolean top = hit.y >= layers;
+        boolean south = hit.z >= 16 - layers;
+        return (top ? "top_" : "bottom_") + (south ? "south" : "north") + (east ? "east" : "west");
     }
 
     @Override
@@ -167,6 +251,12 @@ public class CopycatCornerSliceBlock extends CCWaterloggedCopycatBlock implement
         return CCShapes.CORNER_SLICE.get(pState.getValue(FACING)).get(pState.getValue(HALF)).get(pState.getValue(LAYERS)).toShape();
     }
 
+    @Override
+    public VoxelShape getPartialFaceShape(BlockGetter level, BlockState state, String property, Direction face) {
+        if (!partExists(state, property)) return net.minecraft.world.phys.shapes.Shapes.empty();
+        return CopycatSliceBlock.partialFaceShapePublic(CopycatSliceBlock.orientedCellBox(state, property), face);
+    }
+
     public boolean supportsExternalFaceHiding(BlockState state) {
         return true;
     }
@@ -184,4 +274,8 @@ public class CopycatCornerSliceBlock extends CCWaterloggedCopycatBlock implement
         return BlockUtils.transformCornerLike(state, transform);
     }
 
+    @Override
+    public void transformStorage(BlockState state, IMultiStateCopycatBlockEntity be, StructureTransform transform) {
+        CopycatSliceBlock.remapSliceStorage(state, be, transform);
+    }
 }
