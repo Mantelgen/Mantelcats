@@ -38,9 +38,6 @@ public class CCBlockEntityTypes {
                             CCBlocks.COPYCAT_GHOST_BLOCK,
                             CCBlocks.COPYCAT_LADDER,
                             CCBlocks.COPYCAT_LAYER,
-                            CCBlocks.COPYCAT_SLICE,
-                            CCBlocks.COPYCAT_VERTICAL_SLICE,
-                            CCBlocks.COPYCAT_CORNER_SLICE,
                             CCBlocks.COPYCAT_WOODEN_BUTTON,
                             CCBlocks.COPYCAT_STONE_BUTTON,
                             CCBlocks.COPYCAT_WOODEN_PRESSURE_PLATE,
@@ -67,7 +64,11 @@ public class CCBlockEntityTypes {
                             CCBlocks.COPYCAT_VERTICAL_HALF_LAYER,
                             CCBlocks.COPYCAT_STACKED_HALF_LAYER,
                             CCBlocks.COPYCAT_BOARD,
-                            CCBlocks.COPYCAT_BYTE_PANEL
+                            CCBlocks.COPYCAT_BYTE_PANEL,
+                            CCBlocks.COPYCAT_CORNER_PANEL,
+                            CCBlocks.COPYCAT_SLICE,
+                            CCBlocks.COPYCAT_VERTICAL_SLICE,
+                            CCBlocks.COPYCAT_CORNER_SLICE
                     )
                     .register();
 

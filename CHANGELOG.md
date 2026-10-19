@@ -34,6 +34,13 @@ provenance. Mantelcats tracks upstream `multiloader` plus the fixes listed here.
   see RELEASING.md)
 - Copycat Casing: a single-material copycat with a raised frame and recessed
   faces, styled after Create's casings. Crafted by stonecutting zinc
+- Copycat Corner Panel: a multistate L-shaped panel that fills the inside corner
+  between two perpendicular faces; each arm takes its own material
+- Multistate slices: `copycat_slice`, `copycat_vertical_slice` and
+  `copycat_corner_slice` are now multistate copycats — every cell of the slice
+  (2x2 grid for slices and vertical slices, 8 octants for corner slices) accepts
+  its own material, enabling corner trims like `_|` (upstream #392). Existing
+  single-material slices migrate automatically on chunk load and in schematics
 
 ### Changed
 

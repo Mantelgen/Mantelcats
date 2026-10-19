@@ -42,6 +42,7 @@ public class CCCreativeTabs {
             /* Multi-states */
             CCBlocks.COPYCAT_BYTE,
             CCBlocks.COPYCAT_BYTE_PANEL,
+            CCBlocks.COPYCAT_CORNER_PANEL,
             CCBlocks.COPYCAT_BOARD,
             CCItems.COPYCAT_CATWALK,
             CCItems.COPYCAT_BOX,

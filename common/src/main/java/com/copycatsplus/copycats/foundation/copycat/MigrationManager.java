@@ -111,6 +111,12 @@ public class MigrationManager {
             if (resourceKey.location().getNamespace().equalsIgnoreCase(Copycats.MODID)) {
                 return true;
             }
+        } else if (id.equals(CCBlockEntityTypes.COPYCAT.getId())) {
+            // A block that was converted to multi-state can still have a single-state
+            // block entity in saved chunks; convert it so materials migrate to every part.
+            return CCBlocks.getAllRegisteredMultiStateBlocks().stream()
+                    .map(RegistryEntry::get)
+                    .anyMatch(state.getBlock()::equals);
         }
         return false;
     }
