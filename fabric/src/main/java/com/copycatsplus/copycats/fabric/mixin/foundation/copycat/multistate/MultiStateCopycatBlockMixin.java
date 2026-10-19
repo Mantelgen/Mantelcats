@@ -92,7 +92,7 @@ public abstract class MultiStateCopycatBlockMixin extends Block implements IMult
                 return super.getFriction();
             for (String property : copycatBE.getMaterialItemStorage().getAllProperties()) {
                 if (!copycatBlock.partExists(state, property)) continue;
-                MaterialItemStorage.MaterialItem materialItem = copycatBE.getMaterialItemStorage().getMaterialItem(property);
+                MaterialItemStorage.MaterialItem materialItem = copycatBE.getMaterialItemOrNull(property);
                 BlockState mat = materialItem == null ? Blocks.AIR.defaultBlockState() : materialItem.material();
                 count++;
                 bonus += maybeMaterialAs(level, pos, CustomFrictionBlock.class, mat,

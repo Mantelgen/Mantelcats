@@ -60,6 +60,18 @@ public interface IMultiStateCopycatBlockEntity extends ICopycatBlockEntity {
         return storage.getMaterialItem(property);
     }
 
+    /**
+     * Material item lookup that never returns null, falling back to the base copycat material
+     * when storage or the requested property is unavailable. This is the preferred read accessor
+     * for rendering, transform and interaction paths that need a usable material.
+     */
+    default MaterialItemStorage.MaterialItem getMaterialItemOrDefault(String property) {
+        MaterialItemStorage.MaterialItem item = getMaterialItemOrNull(property);
+        return item == null
+                ? new MaterialItemStorage.MaterialItem(AllBlocks.COPYCAT_BASE.getDefaultState(), ItemStack.EMPTY)
+                : item;
+    }
+
     @ApiStatus.OverrideOnly
     void setMaterialItemStorageInternal(MaterialItemStorage storage);
 
@@ -193,7 +205,7 @@ public interface IMultiStateCopycatBlockEntity extends ICopycatBlockEntity {
             return;
         BlockState wrapperState = getBlockState();
 
-        MaterialItemStorage.MaterialItem materialItem = storage.getMaterialItem(property);
+        MaterialItemStorage.MaterialItem materialItem = getMaterialItemOrNull(property);
         BlockState finalMaterial = blockState;
         if (materialItem == null || !materialItem.material().is(finalMaterial.getBlock()))
             for (Direction side : Iterate.directions) {
@@ -284,7 +296,7 @@ public interface IMultiStateCopycatBlockEntity extends ICopycatBlockEntity {
             return;
         getBlock().transformStorage(this.getBlockState(), this, transform);
         for (String key : storage.getAllProperties()) {
-            MaterialItemStorage.MaterialItem item = storage.getMaterialItem(key);
+            MaterialItemStorage.MaterialItem item = getMaterialItemOrNull(key);
             if (item != null)
                 item.setMaterial(transform.apply(item.material()));
         }

@@ -1,5 +1,6 @@
 package com.copycatsplus.copycats.foundation.copycat.multistate;
 
+import com.copycatsplus.copycats.Copycats;
 import com.copycatsplus.copycats.utility.ItemUtils;
 import com.simibubi.create.AllBlocks;
 import net.minecraft.core.HolderLookup;
@@ -19,8 +20,16 @@ import java.util.stream.Collectors;
 
 /**
  * Stores copycat data, including material, consumed item and CT toggle, for each part of a multi-state copycat.
+ * <p>
+ * Storage is keyed by the copycat's declared part properties and enforces two invariants:
+ * entries are never null, and keys outside the declared property set are rejected on write and
+ * dropped on deserialize. Declared properties are seeded with the base material on creation, so
+ * a declared key always resolves to a non-null item unless the storage has been cleared.
  */
 public class MaterialItemStorage {
+
+    private static final String SCHEMA_KEY = "schema";
+    private static final int SCHEMA_VERSION = 1;
 
     private Map<String, MaterialItem> storage;
 
@@ -37,8 +46,19 @@ public class MaterialItemStorage {
 
     /**
      * Replace the material item for a specific property.
+     * <p>
+     * Writes are rejected when the property is not part of this storage's declared property set
+     * or the item is null, keeping foreign keys and null entries out of the storage.
      */
     public void storeMaterialItem(String property, MaterialItem materialItem) {
+        if (materialItem == null) {
+            Copycats.LOGGER.warn("Refusing to store null material item for property '{}'", property);
+            return;
+        }
+        if (!storage.containsKey(property)) {
+            Copycats.LOGGER.warn("Refusing to store material item for undeclared property '{}'", property);
+            return;
+        }
         storage.put(property, materialItem);
     }
 
@@ -108,6 +128,7 @@ public class MaterialItemStorage {
 
     public CompoundTag serialize(HolderLookup.Provider registries) {
         CompoundTag root = new CompoundTag();
+        root.putInt(SCHEMA_KEY, SCHEMA_VERSION);
         storage.forEach((key, materialItem) -> {
             if (materialItem != null)
                 root.put(key, materialItem.serialize(registries));
@@ -117,6 +138,7 @@ public class MaterialItemStorage {
 
     public CompoundTag serializeSafe(HolderLookup.Provider registries) {
         CompoundTag root = new CompoundTag();
+        root.putInt(SCHEMA_KEY, SCHEMA_VERSION);
         storage.forEach((key, materialItem) -> {
             if (materialItem != null)
                 root.put(key, materialItem.serializeSafe(registries));
@@ -124,9 +146,17 @@ public class MaterialItemStorage {
         return root;
     }
 
+    /**
+     * Load material data from NBT. Both the current schema and the legacy flat format written by
+     * older versions are accepted, but only keys declared by this storage are loaded; foreign or
+     * unknown entries are dropped rather than stored, which migrates poisoned pre-rework data on
+     * first read.
+     */
     public boolean deserialize(CompoundTag tag, HolderLookup.Provider registries) {
         AtomicBoolean anyUpdated = new AtomicBoolean(false);
         tag.getAllKeys().forEach(key -> {
+            if (SCHEMA_KEY.equals(key) || !storage.containsKey(key))
+                return;
             MaterialItem newVersion = MaterialItem.deserialize(tag.getCompound(key), registries);
             MaterialItem oldVersion = storage.put(key, newVersion);
             if (oldVersion != null &&
