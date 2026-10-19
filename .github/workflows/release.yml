@@ -60,6 +60,18 @@ jobs:
                   RELEASE: true
               run: ./gradlew :neoforge:build
 
+            - name: Determine release type
+              id: release_type
+              run: |
+                  tag="${GITHUB_REF_NAME,,}"
+                  if [[ "$tag" == *alpha* ]]; then
+                      echo "type=alpha" >> "$GITHUB_OUTPUT"
+                  elif [[ "$tag" == *beta* ]]; then
+                      echo "type=beta" >> "$GITHUB_OUTPUT"
+                  else
+                      echo "type=release" >> "$GITHUB_OUTPUT"
+                  fi
+
             - name: Publish to GitHub Packages
               env:
                   RELEASE: true
@@ -79,10 +91,11 @@ jobs:
             - name: Publish to Modrinth and CurseForge
               env:
                 RELEASE: true
+                RELEASE_TYPE: ${{ steps.release_type.outputs.type }}
                 MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
                 CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
               if: env.MODRINTH_TOKEN != '' && env.CURSEFORGE_TOKEN != ''
-              run: ./gradlew :neoforge:publishMods -PMODRINTH_TOKEN=${{ secrets.MODRINTH_TOKEN }} -PCURSEFORGE_TOKEN=${{ secrets.CURSEFORGE_TOKEN }}
+              run: ./gradlew :neoforge:publishMods -PMODRINTH_TOKEN=${{ secrets.MODRINTH_TOKEN }} -PCURSEFORGE_TOKEN=${{ secrets.CURSEFORGE_TOKEN }} -PreleaseType=${{ steps.release_type.outputs.type }}
 
             - name: Find jars
               id: find_jars
