@@ -5,6 +5,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+---
+
+# Mantelcats fork changes
+
+Changes below this section are the upstream Copycats+ history, preserved for
+provenance. Mantelcats tracks upstream `multiloader` plus the fixes listed here.
+
+## Unreleased
+
+### Fixed
+
+- Guard every `getMaterialItem` lookup against missing storage entries and stale block
+  entities across render, interaction, kinetic and transform paths (upstream #423
+  follow-up sites, #430, related chunk-meshing crashes)
+- Clear `CopycatCogWheelBlockEntity` material storage on `invalidate()` — closes the
+  multistate memory-leak path missed by the upstream #420 fix
+- Resolve unknown Byte/BytePanel/Board part properties without throwing, including the
+  `getColorIndex`/`bite` NPE (upstream #396, #431, #371)
+- Redraw copycat block entities on every client sync read, not only on material change
+  — unskinned copycats render immediately after contraption disassembly (upstream #419)
+- Resolve registry access without a level during structure migration (upstream #414)
+
+### Added
+
+- Tag-driven release channels: `v*alpha*`/`v*beta*`/`v*` tags publish to the
+  alpha/beta/release channel on CurseForge and Modrinth (pending maintainer setup —
+  see RELEASING.md)
+
+---
+
 ## 3.0.9 - 2026-09-06
 
 ### Fixed

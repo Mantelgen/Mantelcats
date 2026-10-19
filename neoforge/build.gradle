@@ -135,7 +135,7 @@ tasks.publishMods.dependsOn(tasks.assemble)
 tasks.publishMods.mustRunAfter(tasks.build)
 
 publishMods {
-    changelog = "Check out the detailed changelog at https://github.com/copycats-plus/copycats/blob/multiloader/CHANGELOG.md"
+    changelog = "Check out the detailed changelog at https://github.com/Mantelgen/Mantelcats/blob/multiloader/CHANGELOG.md"
     def releaseType = (project.findProperty("releaseType") ?: System.getenv("RELEASE_TYPE") ?: "stable").toString()
     type = releaseType.equalsIgnoreCase("alpha") ? ALPHA : releaseType.equalsIgnoreCase("beta") ? BETA : STABLE
     file = tasks.remapJar.archiveFile
