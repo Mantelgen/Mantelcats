@@ -43,6 +43,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
 
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -121,7 +122,7 @@ public class CopycatBytePanelBlock extends WaterloggedMultiStateCopycatBlock imp
         if (property.equals(BOTTOM_RIGHT.getName())) return 1;
         if (property.equals(TOP_LEFT.getName())) return 1;
         if (property.equals(TOP_RIGHT.getName())) return 0;
-        throw new RuntimeException("Invalid property: " + property);
+        return 0;
     }
 
     @Override
@@ -208,14 +209,18 @@ public class CopycatBytePanelBlock extends WaterloggedMultiStateCopycatBlock imp
         BlockState state = context.getLevel().getBlockState(blockPos);
         BlockState interactionState = state.is(this) ? state : stateForPlacement.setValue(FACING, context.getClickedFace().getOpposite());
         String property = getPropertyFromInteraction(interactionState, context.getLevel(), context.getClickedPos(), context.getClickLocation(), context.getClickedFace(), false);
+        BooleanProperty byteProperty = fromProperty(property);
         if (state.is(this)) {
-            if (!state.getValue(fromProperty(property)))
-                return state.setValue(fromProperty(property), true);
+            if (byteProperty == null)
+                return state;
+            if (!state.getValue(byteProperty))
+                return state.setValue(byteProperty, true);
             else {
                 return state;
             }
         } else {
-            return stateForPlacement.setValue(FACING, context.getClickedFace().getOpposite()).setValue(fromProperty(property), true);
+            stateForPlacement = stateForPlacement.setValue(FACING, context.getClickedFace().getOpposite());
+            return byteProperty == null ? stateForPlacement : stateForPlacement.setValue(byteProperty, true);
         }
     }
 
@@ -225,7 +230,8 @@ public class CopycatBytePanelBlock extends WaterloggedMultiStateCopycatBlock imp
         ItemStack itemstack = context.getItemInHand();
         if (!itemstack.is(this.asItem())) return false;
         String property = getPropertyFromInteraction(state, context.getLevel(), context.getClickedPos(), context.getClickLocation(), context.getClickedFace(), false);
-        return !state.getValue(fromProperty(property));
+        BooleanProperty byteProperty = fromProperty(property);
+        return byteProperty != null && !state.getValue(byteProperty);
     }
 
     @Override
@@ -233,16 +239,20 @@ public class CopycatBytePanelBlock extends WaterloggedMultiStateCopycatBlock imp
         onWrenched(state, context);
         int byteCount = 0;
         for (String property : storageProperties()) {
-            if (state.getValue(fromProperty(property))) byteCount++;
+            BooleanProperty byteProperty = fromProperty(property);
+            if (byteProperty != null && state.getValue(byteProperty)) byteCount++;
         }
         if (byteCount <= 1) return super.onSneakWrenched(state, context);
 
         String property = getPropertyFromInteraction(state, context.getLevel(), context.getClickedPos(), context.getClickLocation(), context.getClickedFace(), true);
+        BooleanProperty byteProperty = fromProperty(property);
+        if (byteProperty == null)
+            return InteractionResult.SUCCESS;
         if (context.getLevel() instanceof ServerLevel world) {
             Player player = context.getPlayer();
             BlockPos pos = context.getClickedPos();
             if (player != null) {
-                List<ItemStack> drops = Block.getDrops(defaultBlockState().setValue(fromProperty(property), true), (ServerLevel) world, pos, world.getBlockEntity(pos), player, context.getItemInHand());
+                List<ItemStack> drops = Block.getDrops(defaultBlockState().setValue(byteProperty, true), (ServerLevel) world, pos, world.getBlockEntity(pos), player, context.getItemInHand());
                 if (!player.isCreative()) {
                     for (ItemStack drop : drops) {
                         player.getInventory().placeItemBackInInventory(drop);
@@ -250,7 +260,7 @@ public class CopycatBytePanelBlock extends WaterloggedMultiStateCopycatBlock imp
                 }
             }
             BlockPos up = pos.relative(Direction.UP);
-            world.setBlockAndUpdate(pos, state.setValue(fromProperty(property), false).updateShape(Direction.UP, world.getBlockState(up), world, pos, up));
+            world.setBlockAndUpdate(pos, state.setValue(byteProperty, false).updateShape(Direction.UP, world.getBlockState(up), world, pos, up));
             IWrenchable.playRemoveSound(world, pos);
         }
         return InteractionResult.SUCCESS;
@@ -518,12 +528,12 @@ public class CopycatBytePanelBlock extends WaterloggedMultiStateCopycatBlock imp
         }
     }
 
-    public static BooleanProperty fromProperty(String property) {
+    public static @Nullable BooleanProperty fromProperty(String property) {
         if (property.equals(BOTTOM_LEFT.getName())) return BOTTOM_LEFT;
         if (property.equals(BOTTOM_RIGHT.getName())) return BOTTOM_RIGHT;
         if (property.equals(TOP_LEFT.getName())) return TOP_LEFT;
         if (property.equals(TOP_RIGHT.getName())) return TOP_RIGHT;
-        throw new RuntimeException("Invalid property: " + property);
+        return null;
     }
 
     public static String getProperty(int horizontal, int vertical) {
@@ -539,7 +549,7 @@ public class CopycatBytePanelBlock extends WaterloggedMultiStateCopycatBlock imp
         if (property.equals(BOTTOM_LEFT.getName())) return new Vector2i(1, 0);
         if (property.equals(TOP_RIGHT.getName())) return new Vector2i(0, 1);
         if (property.equals(TOP_LEFT.getName())) return new Vector2i(1, 1);
-        throw new RuntimeException("Invalid property: " + property);
+        return new Vector2i(0, 0);
     }
 
     public static Direction getHorizontal(Direction facing) {

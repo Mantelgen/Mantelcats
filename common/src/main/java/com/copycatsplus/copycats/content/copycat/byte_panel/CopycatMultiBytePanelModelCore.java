@@ -7,6 +7,7 @@ import com.copycatsplus.copycats.foundation.copycat.model.assembly.CopycatRender
 import com.copycatsplus.copycats.foundation.copycat.model.assembly.quad.QuadAutoCull;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
@@ -28,7 +29,8 @@ public class CopycatMultiBytePanelModelCore extends CopycatModelCore {
 
     @Override
     public void emitCopycatQuads(String key, BlockState state, CopycatRenderContext context, BlockState material) {
-        if (!state.getValue(fromProperty(key))) return;
+        BooleanProperty byteProperty = fromProperty(key);
+        if (byteProperty == null || !state.getValue(byteProperty)) return;
 
         int i = key.equals(BOTTOM_LEFT.getName()) || key.equals(TOP_LEFT.getName()) ? 1 : 0;
         int j = key.equals(TOP_LEFT.getName()) || key.equals(TOP_RIGHT.getName()) ? 1 : 0;
