@@ -25,6 +25,7 @@ public class CCBlockEntityTypes {
             REGISTRATE.blockEntity("copycat", CCCopycatBlockEntity::new)
                     .validBlocks(
                             CCBlocks.COPYCAT_BLOCK,
+                            CCBlocks.COPYCAT_CASING,
                             CCBlocks.COPYCAT_BEAM,
                             CCBlocks.COPYCAT_VERTICAL_STEP,
                             CCBlocks.COPYCAT_HALF_PANEL,

@@ -67,6 +67,8 @@ public class CCStandardRecipes extends CopycatsRecipeProvider {
 
     GeneratedRecipe COPYCAT_BLOCK = copycat(CCBlocks.COPYCAT_BLOCK, 1);
 
+    GeneratedRecipe COPYCAT_CASING = copycat(CCBlocks.COPYCAT_CASING, 1);
+
     GeneratedRecipe COPYCAT_BLOCK_FROM_SLABS = create(CCBlocks.COPYCAT_BLOCK).withSuffix("_from_slabs")
             .unlockedByTag(() -> CCTags.Items.COPYCAT_SLAB.tag)
             .requiresResultFeature()

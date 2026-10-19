@@ -33,6 +33,8 @@ import com.copycatsplus.copycats.content.copycat.board.CopycatBoardBlock;
 import com.copycatsplus.copycats.content.copycat.board.CopycatMultiBoardModelCore;
 import com.copycatsplus.copycats.content.copycat.button.CopycatButtonBlock;
 import com.copycatsplus.copycats.content.copycat.button.CopycatButtonModelCore;
+import com.copycatsplus.copycats.content.copycat.casing.CopycatCasingBlock;
+import com.copycatsplus.copycats.content.copycat.casing.CopycatCasingModelCore;
 import com.copycatsplus.copycats.content.copycat.bytes.CopycatByteBlock;
 import com.copycatsplus.copycats.content.copycat.bytes.CopycatMultiByteModelCore;
 import com.copycatsplus.copycats.content.copycat.cogwheel.CopycatCogWheelBlock;
@@ -159,6 +161,21 @@ public class CCBlocks {
                     ))
                     .tag(CCTags.Items.COPYCAT_BLOCK.tag)
                     .transform(customItemModel("copycat_base", "block"))
+                    .register();
+
+    public static final BlockEntry<CopycatCasingBlock> COPYCAT_CASING =
+            REGISTRATE.block("copycat_casing", CopycatCasingBlock::new)
+                    .transform(CCBuilderTransformers.copycat())
+                    .transform(FeatureToggle.register())
+                    .onRegister(onClient(() -> createBlockModel(CopycatCasingModelCore::new)))
+                    .item()
+                    .onRegister(CopycatDescription.register(
+                            CopycatCharacteristics.COPYCAT,
+                            CopycatCharacteristics.CT_TOGGLE,
+                            CopycatCharacteristics.COPY_CAT
+                    ))
+                    .tag(CCTags.Items.COPYCAT_CASING.tag)
+                    .transform(customItemModel("copycat_base", "casing"))
                     .register();
 
     public static final BlockEntry<CopycatBeamBlock> COPYCAT_BEAM =
