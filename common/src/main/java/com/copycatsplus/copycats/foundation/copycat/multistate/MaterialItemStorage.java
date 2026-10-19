@@ -60,35 +60,36 @@ public class MaterialItemStorage {
      * Get all materials stored in this storage, regardless of whether they have a custom material or whether they exist according to the copycat's block state.
      */
     public Set<BlockState> getAllMaterials() {
-        return storage.values().stream().map(MaterialItem::material).collect(Collectors.toSet());
+        return storage.values().stream().filter(Objects::nonNull).map(MaterialItem::material).collect(Collectors.toSet());
     }
 
     /**
      * Get all material items stored in this storage, regardless of whether they have a custom material or whether they exist according to the copycat's block state.
      */
     public Set<MaterialItem> getAllMaterialItems() {
-        return new HashSet<>(storage.values());
+        return storage.values().stream().filter(Objects::nonNull).collect(Collectors.toSet());
     }
 
     /**
      * Get all consumed items stored in this storage. Empty stacks are not included.
      */
     public List<ItemStack> getAllConsumedItems() {
-        return storage.values().stream().map(MaterialItem::consumedItem).filter(stack -> !stack.isEmpty()).collect(Collectors.toList());
+        return storage.values().stream().filter(Objects::nonNull).map(MaterialItem::consumedItem).filter(stack -> !stack.isEmpty()).collect(Collectors.toList());
     }
 
     /**
      * Get a map of all properties and their corresponding materials stored in this storage.
      */
     public Map<String, BlockState> getMaterialMap() {
-        return storage.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, s -> s.getValue().material));
+        return storage.entrySet().stream().filter(s -> s.getValue() != null).collect(Collectors.toMap(Map.Entry::getKey, s -> s.getValue().material));
     }
 
     /**
      * Check if a specific property has a custom material.
      */
     public boolean hasCustomMaterial(String property) {
-        return storage.get(property).hasCustomMaterial();
+        MaterialItem item = storage.get(property);
+        return item != null && item.hasCustomMaterial();
     }
 
     /**
@@ -98,19 +99,28 @@ public class MaterialItemStorage {
      */
     public void remapStorage(Function<String, String> keyMapper) {
         Map<String, MaterialItem> newStorage = new HashMap<>();
-        storage.forEach((key, materialItem) -> newStorage.put(keyMapper.apply(key), materialItem));
+        storage.forEach((key, materialItem) -> {
+            if (materialItem != null)
+                newStorage.put(keyMapper.apply(key), materialItem);
+        });
         storage = newStorage;
     }
 
     public CompoundTag serialize(HolderLookup.Provider registries) {
         CompoundTag root = new CompoundTag();
-        storage.forEach((key, materialItem) -> root.put(key, materialItem.serialize(registries)));
+        storage.forEach((key, materialItem) -> {
+            if (materialItem != null)
+                root.put(key, materialItem.serialize(registries));
+        });
         return root;
     }
 
     public CompoundTag serializeSafe(HolderLookup.Provider registries) {
         CompoundTag root = new CompoundTag();
-        storage.forEach((key, materialItem) -> root.put(key, materialItem.serializeSafe(registries)));
+        storage.forEach((key, materialItem) -> {
+            if (materialItem != null)
+                root.put(key, materialItem.serializeSafe(registries));
+        });
         return root;
     }
 

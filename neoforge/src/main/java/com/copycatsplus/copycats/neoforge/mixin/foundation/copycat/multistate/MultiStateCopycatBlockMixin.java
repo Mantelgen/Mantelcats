@@ -51,7 +51,7 @@ public abstract class MultiStateCopycatBlockMixin extends Block implements IBloc
     public SoundType getSoundType(BlockState state, LevelReader level, BlockPos pos, Entity entity) {
         if (state.getBlock() instanceof IMultiStateCopycatBlock copycatBlock) {
             IMultiStateCopycatBlockEntity copycatBE = copycatBlock.getCopycatBlockEntity(level, pos);
-            if (copycatBE == null)
+            if (copycatBE == null || copycatBE.getMaterialItemStorage() == null)
                 return super.getSoundType(state, level, pos, entity);
             for (MaterialItemStorage.MaterialItem materialItem : copycatBE.getMaterialItemStorage().getAllMaterialItems()) {
                 if (materialItem.hasCustomMaterial()) {
@@ -71,15 +71,16 @@ public abstract class MultiStateCopycatBlockMixin extends Block implements IBloc
             int count = 0;
 
             IMultiStateCopycatBlockEntity copycatBE = copycatBlock.getCopycatBlockEntity(level, pos);
-            if (copycatBE == null)
+            if (copycatBE == null || copycatBE.getMaterialItemStorage() == null)
                 return super.getFriction(state, level, pos, entity);
             for (String property : copycatBE.getMaterialItemStorage().getAllProperties()) {
                 if (!copycatBlock.partExists(state, property)) continue;
-                BlockState mat = copycatBE.getMaterialItemStorage().getMaterialItem(property).material();
+                MaterialItemStorage.MaterialItem materialItem = copycatBE.getMaterialItemStorage().getMaterialItem(property);
+                BlockState mat = materialItem == null ? Blocks.AIR.defaultBlockState() : materialItem.material();
                 count++;
                 bonus += mat.is(Blocks.AIR) ? super.getFriction(state, level, pos, entity) : mat.getFriction(level, pos, entity);
             }
-            return bonus / count;
+            return count == 0 ? super.getFriction(state, level, pos, entity) : bonus / count;
         } else {
             return super.getFriction(state, level, pos, entity);
         }
@@ -100,7 +101,7 @@ public abstract class MultiStateCopycatBlockMixin extends Block implements IBloc
             AtomicReference<Float> explosionResistance = new AtomicReference<>(state.getBlock().getExplosionResistance());
 
             IMultiStateCopycatBlockEntity copycatBE = copycatBlock.getCopycatBlockEntity(level, pos);
-            if (copycatBE == null)
+            if (copycatBE == null || copycatBE.getMaterialItemStorage() == null)
                 return super.getExplosionResistance(state, level, pos, explosion);
             copycatBE.getMaterialItemStorage().getAllMaterials().forEach(bs -> {
                 explosionResistance.accumulateAndGet(bs.getBlock().getExplosionResistance(), Math::max);
@@ -132,7 +133,8 @@ public abstract class MultiStateCopycatBlockMixin extends Block implements IBloc
             IMultiStateCopycatBlockEntity copycatBE = copycatBlock.getCopycatBlockEntity(level, pos);
             if (copycatBE == null)
                 return super.addLandingEffects(state1, level, pos, state2, entity, numberOfParticles);
-            BlockState material = copycatBE.getMaterialItemStorage().getMaterialItem(property).material();
+            MaterialItemStorage.MaterialItem materialItem = copycatBE.getMaterialItemOrNull(property);
+            BlockState material = materialItem == null ? AllBlocks.COPYCAT_BASE.getDefaultState() : materialItem.material();
             return material.addLandingEffects(level, pos, material, entity, numberOfParticles);
         } else {
             return super.addLandingEffects(state1, level, pos, state2, entity, numberOfParticles);
@@ -148,7 +150,8 @@ public abstract class MultiStateCopycatBlockMixin extends Block implements IBloc
             IMultiStateCopycatBlockEntity copycatBE = copycatBlock.getCopycatBlockEntity(level, pos);
             if (copycatBE == null)
                 return super.addRunningEffects(state, level, pos, entity);
-            BlockState material = copycatBE.getMaterialItemStorage().getMaterialItem(property).material();
+            MaterialItemStorage.MaterialItem materialItem = copycatBE.getMaterialItemOrNull(property);
+            BlockState material = materialItem == null ? AllBlocks.COPYCAT_BASE.getDefaultState() : materialItem.material();
             return material.addRunningEffects(level, pos, entity);
         } else {
             return super.addRunningEffects(state, level, pos, entity);
@@ -161,7 +164,7 @@ public abstract class MultiStateCopycatBlockMixin extends Block implements IBloc
             AtomicReference<Float> bonus = new AtomicReference<>(0f);
 
             IMultiStateCopycatBlockEntity copycatBE = copycatBlock.getCopycatBlockEntity(level, pos);
-            if (copycatBE == null)
+            if (copycatBE == null || copycatBE.getMaterialItemStorage() == null)
                 return super.getEnchantPowerBonus(state, level, pos);
             copycatBE.getMaterialItemStorage().getAllMaterials().forEach(mat -> bonus.accumulateAndGet(mat.getEnchantPowerBonus(level, pos), Float::max));
             return bonus.get();
@@ -181,7 +184,8 @@ public abstract class MultiStateCopycatBlockMixin extends Block implements IBloc
                 super.fallOn(pLevel, state, pPos, pEntity, p_152430_);
                 return;
             }
-            BlockState material = copycatBE.getMaterialItemStorage().getMaterialItem(property).material();
+            MaterialItemStorage.MaterialItem materialItem = copycatBE.getMaterialItemOrNull(property);
+            BlockState material = materialItem == null ? AllBlocks.COPYCAT_BASE.getDefaultState() : materialItem.material();
             material.getBlock().fallOn(pLevel, material, pPos, pEntity, p_152430_);
         } else {
             super.fallOn(pLevel, state, pPos, pEntity, p_152430_);

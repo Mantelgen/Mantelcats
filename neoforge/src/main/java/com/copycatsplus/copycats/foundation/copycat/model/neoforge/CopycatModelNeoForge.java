@@ -9,6 +9,7 @@ import com.copycatsplus.copycats.foundation.copycat.model.ScaledBlockAndTintGett
 import com.copycatsplus.copycats.foundation.copycat.model.assembly.neoforge.CopycatRenderContextNeoForge;
 import com.copycatsplus.copycats.foundation.copycat.multistate.IMultiStateCopycatBlock;
 import com.copycatsplus.copycats.foundation.copycat.multistate.IMultiStateCopycatBlockEntity;
+import com.copycatsplus.copycats.foundation.copycat.multistate.MaterialItemStorage;
 import com.copycatsplus.copycats.utility.neoforge.ModelDataUtils;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.foundation.model.BakedModelWrapperWithData;
@@ -126,15 +127,10 @@ public class CopycatModelNeoForge extends BakedModelWrapperWithData {
             Map<String, OcclusionData> occlusionMap = new HashMap<>();
             for (Map.Entry<String, BlockState> s : materials.entrySet()) {
                 Vec3i inner = multiStateBlock.getVectorFromProperty(state, s.getKey());
-                boolean enableCT = !(world.getBlockEntity(pos) instanceof IMultiStateCopycatBlockEntity);
-                if ((world.getBlockEntity(pos) instanceof IMultiStateCopycatBlockEntity multiStateBE)) {
-                    if (multiStateBE.getMaterialItemStorage().getMaterialItem(s.getKey()) != null)
-                        try {
-                            enableCT = multiStateBE.getMaterialItemStorage().getMaterialItem(s.getKey()).enableCT();
-                            //Doing this as a double insurance
-                        } catch (Exception ignored) {
-                            enableCT = true;
-                        }
+                boolean enableCT = true;
+                if (world.getBlockEntity(pos) instanceof IMultiStateCopycatBlockEntity multiStateBE) {
+                    MaterialItemStorage.MaterialItem materialItem = multiStateBE.getMaterialItemOrNull(s.getKey());
+                    enableCT = materialItem != null && materialItem.enableCT();
                 }
                 ScaledBlockAndTintGetter scaledWorld = new ScaledBlockAndTintGetterForge(s.getKey(), world, pos, inner, multiStateBlock.vectorScale(state), p -> true);
 

@@ -297,16 +297,16 @@ public class CopycatSlabBlock extends WaterloggedMultiStateCopycatBlock implemen
                     normal.getZ() == 0 ? 8 : normal.getZ() > 0 ? 16 : 0);
             t.addPart(
                     part.getX(), part.getY(), part.getZ()
-            ).setData(be.getMaterialItemStorage().getMaterialItem(
+            ).setData(materialOrDefault(be.getMaterialItemStorage().getMaterialItem(
                     facing.getAxisDirection() == AxisDirection.POSITIVE ? Half.TOP.getSerializedName() : Half.BOTTOM.getSerializedName()
-            ));
+            )));
             if (state.getValue(SLAB_TYPE) == SlabType.DOUBLE) {
                 Vec3i part2 = new Vec3i(16, 16, 16).subtract(part);
                 t.addPart(
                         part2.getX(), part2.getY(), part2.getZ()
-                ).setData(be.getMaterialItemStorage().getMaterialItem(
+                ).setData(materialOrDefault(be.getMaterialItemStorage().getMaterialItem(
                         facing.getAxisDirection() == AxisDirection.POSITIVE ? Half.BOTTOM.getSerializedName() : Half.TOP.getSerializedName()
-                ));
+                )));
             }
         });
     }
@@ -340,9 +340,13 @@ public class CopycatSlabBlock extends WaterloggedMultiStateCopycatBlock implemen
         for (CopycatTransformableState.Part<MaterialItemStorage.MaterialItem> part : transformableState.parts) {
             be.getMaterialItemStorage().storeMaterialItem(
                     part.vector.getX() > 8 || part.vector.getY() > 8 || part.vector.getZ() > 8 ? Half.TOP.getSerializedName() : Half.BOTTOM.getSerializedName(),
-                    part.data
+                    materialOrDefault(part.data)
             );
         }
+    }
+
+    private static MaterialItemStorage.MaterialItem materialOrDefault(MaterialItemStorage.MaterialItem item) {
+        return item == null ? new MaterialItemStorage.MaterialItem(AllBlocks.COPYCAT_BASE.getDefaultState(), ItemStack.EMPTY) : item;
     }
 
     @Override

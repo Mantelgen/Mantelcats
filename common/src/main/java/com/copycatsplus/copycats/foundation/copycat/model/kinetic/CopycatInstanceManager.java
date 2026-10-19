@@ -2,6 +2,8 @@ package com.copycatsplus.copycats.foundation.copycat.model.kinetic;
 
 import com.copycatsplus.copycats.foundation.copycat.ICopycatBlockEntity;
 import com.copycatsplus.copycats.foundation.copycat.multistate.IMultiStateCopycatBlockEntity;
+import com.copycatsplus.copycats.foundation.copycat.multistate.MaterialItemStorage;
+import com.simibubi.create.AllBlocks;
 import dev.engine_room.flywheel.lib.instance.AbstractInstance;
 import dev.engine_room.flywheel.lib.visual.AbstractBlockEntityVisual;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -50,7 +52,8 @@ public abstract class CopycatInstanceManager<B extends BlockEntity, R extends Ab
         if (singleStateBE != null) {
             return singleStateBE.getMaterial();
         } else {
-            return multiStateBE.getMaterialItemStorage().getMaterialItem(key).material();
+            MaterialItemStorage.MaterialItem materialItem = multiStateBE.getMaterialItemOrNull(key);
+            return materialItem == null ? AllBlocks.COPYCAT_BASE.getDefaultState() : materialItem.material();
         }
     }
 

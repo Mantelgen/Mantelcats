@@ -2,7 +2,9 @@ package com.copycatsplus.copycats.foundation.copycat.model.kinetic;
 
 import com.copycatsplus.copycats.foundation.copycat.ICopycatBlockEntity;
 import com.copycatsplus.copycats.foundation.copycat.multistate.IMultiStateCopycatBlockEntity;
+import com.copycatsplus.copycats.foundation.copycat.multistate.MaterialItemStorage;
 import com.copycatsplus.copycats.utility.ChatUtils;
+import com.simibubi.create.AllBlocks;
 import dev.engine_room.flywheel.api.backend.BackendManager;
 import dev.engine_room.flywheel.backend.Backends;
 import net.minecraft.client.Minecraft;
@@ -39,7 +41,8 @@ public record KineticCopycatRenderData(ICopycatPartialModel partialModel, Partia
      * @param property     The property of the block entity that determines the material state.
      */
     public static KineticCopycatRenderData of(ICopycatPartialModel partialModel, IMultiStateCopycatBlockEntity be, String property) {
-        BlockState material = be.getMaterialItemStorage().getMaterialItem(property).material();
+        MaterialItemStorage.MaterialItem materialItem = be.getMaterialItemOrNull(property);
+        BlockState material = materialItem == null ? AllBlocks.COPYCAT_BASE.getDefaultState() : materialItem.material();
         return of(partialModel, be, material);
     }
 

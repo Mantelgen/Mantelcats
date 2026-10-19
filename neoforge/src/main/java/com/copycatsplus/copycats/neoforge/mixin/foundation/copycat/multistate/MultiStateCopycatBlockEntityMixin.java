@@ -1,6 +1,7 @@
 package com.copycatsplus.copycats.neoforge.mixin.foundation.copycat.multistate;
 
 import com.copycatsplus.copycats.foundation.copycat.multistate.IMultiStateCopycatBlockEntity;
+import com.copycatsplus.copycats.foundation.copycat.multistate.MaterialItemStorage;
 import com.copycatsplus.copycats.foundation.copycat.multistate.MultiStateCopycatBlockEntity;
 import com.copycatsplus.copycats.content.copycat.cogwheel.CopycatCogWheelBlockEntity;
 import com.copycatsplus.copycats.utility.neoforge.ModelDataUtils;
@@ -14,6 +15,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
 import java.util.Collections;
+import java.util.Map;
 
 import static com.copycatsplus.copycats.foundation.copycat.model.neoforge.CopycatModelNeoForge.MATERIALS_PROPERTY;
 
@@ -40,10 +42,11 @@ public abstract class MultiStateCopycatBlockEntityMixin extends SmartBlockEntity
 
     @Override
     public @NotNull ModelData getModelData() {
+        MaterialItemStorage storage = getMaterialItemStorage();
         return ModelDataUtils.mergeData(
                 super.getModelData(),
                 ModelData.builder()
-                        .with(MATERIALS_PROPERTY, Collections.synchronizedMap(getMaterialItemStorage().getMaterialMap()))
+                        .with(MATERIALS_PROPERTY, Collections.synchronizedMap(storage == null ? Map.of() : storage.getMaterialMap()))
                         .build()
         ).build();
     }
