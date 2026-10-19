@@ -295,7 +295,10 @@ public interface IMultiStateCopycatBlockEntity extends ICopycatBlockEntity {
         if (self.getBlockState().getBlock() instanceof IMultiStateCopycatBlock && self.getMaterialItemStorage() != null) {
             boolean anyUpdated = self.getMaterialItemStorage().deserialize(tag.getCompound("material_data"), registries);
 
-            if (anyUpdated)
+            // A client sync packet can arrive when the client's render state is stale even though the
+            // material data itself is unchanged (e.g. an unskinned copycat placed by a disassembling
+            // contraption still holds default materials), so always redraw on client reads.
+            if (anyUpdated || clientPacket)
                 BlockEntityUtils.redraw((BlockEntity) self); // not calling self.redraw() because Extended Cogwheels overwrites it to be protected
         }
     }
