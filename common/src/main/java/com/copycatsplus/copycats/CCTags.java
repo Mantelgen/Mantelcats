@@ -59,6 +59,7 @@ public class CCTags {
         COPYCAT_BLOCK,
         COPYCAT_BOARD,
         COPYCAT_BOX,
+        COPYCAT_CASING,
         COPYCAT_CATWALK,
         COPYCAT_FENCE,
         COPYCAT_FENCE_GATE,

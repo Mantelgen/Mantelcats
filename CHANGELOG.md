@@ -32,6 +32,8 @@ provenance. Mantelcats tracks upstream `multiloader` plus the fixes listed here.
 - Tag-driven release channels: `v*alpha*`/`v*beta*`/`v*` tags publish to the
   alpha/beta/release channel on CurseForge and Modrinth (pending maintainer setup —
   see RELEASING.md)
+- Copycat Casing: a single-material copycat with a raised frame and recessed
+  faces, styled after Create's casings. Crafted by stonecutting zinc
 
 ### Changed
 

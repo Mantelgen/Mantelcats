@@ -21,6 +21,7 @@ public class CCCreativeTabs {
     public static final List<@NotNull ItemProviderEntry<? extends FeatureElement, ? extends FeatureElement>> DECORATIVE = List.of(
             /* Vanilla blocks */
             CCBlocks.COPYCAT_BLOCK,
+            CCBlocks.COPYCAT_CASING,
             CCBlocks.COPYCAT_SLAB,
             CCBlocks.COPYCAT_STAIRS,
             CCBlocks.COPYCAT_VERTICAL_STAIRS,
