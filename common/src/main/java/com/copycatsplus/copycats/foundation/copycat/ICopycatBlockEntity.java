@@ -218,7 +218,10 @@ public interface ICopycatBlockEntity extends SpecialBlockEntityItemRequirement, 
             self.setMaterialInternal(AllBlocks.COPYCAT_BASE.getDefaultState());
         }
 
-        if (prevMaterial != self.getMaterial())
+        // A client sync packet can arrive when the client's render state is stale even though the
+        // material data itself is unchanged (e.g. an unskinned copycat placed by a disassembling
+        // contraption still holds the default material), so always redraw on client reads.
+        if (clientPacket || prevMaterial != self.getMaterial())
             BlockEntityUtils.redraw((BlockEntity) self); // not calling self.redraw() because Extended Cogwheels overwrites it to be protected
     }
 
