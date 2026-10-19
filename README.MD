@@ -1,133 +1,94 @@
-<h1 align="center">Create: Copycats+</h1>
+# Mantelcats
 
-<p align="center">
-<a title="Supported versions" target="_blank" href="https://modrinth.com/project/copycats"><img src="https://cf.way2muchnoise.eu/versions/968398_all.svg"></a>
-<a title="Modrinth" target="_blank" href="https://modrinth.com/project/copycats"><img src="https://img.shields.io/modrinth/dt/UT2M39wf?style=flat&label=Modrinth"></a>
-<a title="CurseForge" target="_blank" href="https://legacy.curseforge.com/minecraft/mc-mods/copycats"><img src="https://img.shields.io/curseforge/dt/968398?style=flat&label=CurseForge"></a>
-<a title="Crowdin" target="_blank" href="https://crowdin.com/project/copycats"><img src="https://badges.crowdin.net/copycats/localized.svg"></a>
-<a title="Discord" target="_blank" href="https://discord.gg/YxPPFHn4SS"><img src="https://discordapp.com/api/guilds/1202240504809652365/widget.png?style=shield"></a>
-</p>
+A fork of [Create: Copycats+](https://github.com/copycats-plus/copycats) focused on fixing
+multistate material-storage bugs — crashes, memory leaks and invisible blocks that affect
+byte panels, boards, bytes, slabs, half layers and cogwheels.
 
-All the copycats you've ever wanted, combined into a single mod!
+Mantelcats tracks upstream `copycats-plus/copycats` (`multiloader` branch) and layers
+targeted fixes on top. All copycat content, features and behavior come from upstream;
+this fork only hardens the code around them.
 
-### Join our discord for test builds and discussions!
+**Target environment:** Minecraft 1.21.1 · NeoForge · Create 6.x
 
-[![Discord Banner](https://discordapp.com/api/guilds/1202240504809652365/widget.png?style=banner2)](https://discord.gg/YxPPFHn4SS)
+## What this fork fixes
 
-[![BisectHosting](https://copycats-site-sigma.vercel.app/api/banner)](https://copycats-site-sigma.vercel.app/api/link)
+All of the following have been verified in-game on a live NeoForge server and client:
 
-## What's new in v2.2
+- **Client crashes on missing/foreign material data** — every `getMaterialItem` lookup in
+  render, interaction, kinetic and transform paths now tolerates absent storage entries,
+  stale block entities and partially deserialized data instead of throwing NPEs.
+  (upstream #423 follow-up sites, #430, and related chunk-meshing crashes)
+- **Crashes on invalid part properties** — Byte/BytePanel/Board property resolution no
+  longer throws on foreign or missing keys (e.g. `bottom_southeast` reaching a byte
+  panel through stale NBT or cross-part hits), including the `getColorIndex`/`bite` NPE.
+  (upstream #396, #431, #371)
+- **Multistate memory leak** — `CopycatCogWheelBlockEntity` now clears its material
+  storage on `invalidate()`, closing the leak path the upstream #420 fix missed.
+- **Invisible unskinned copycats** — block entities redraw on every client sync read,
+  not only on material change, so copycats placed by contraption disassembly render
+  immediately. (upstream #419)
+- **Structure migration NPE** — `MigrationManager` resolves registry access from the
+  running server instead of `be.getLevel()`, which is null for detached block entities.
+  (upstream #414)
+- **Tag-driven release pipeline** — tagging `v*alpha*`, `v*beta*` or `v*` publishes to
+  the alpha, beta or release channel on CurseForge/Modrinth automatically once the
+  maintainer configures project IDs and tokens.
 
-![What's new in v2.2](https://cdn.modrinth.com/data/UT2M39wf/images/db6415ade4151ca3f5581fc6f565e570c2bee758.png)
+A complete, issue-by-issue audit of the fork against upstream is in the repository
+history; each fix ships as an independently reviewable commit.
 
-- **Universal CT System**
-  - All copycats now connect textures with each other as long as they have a matching block face
-- Copycat byte panels
-  - A quarter of a panel. 4 of which forms a full panel
-- Copycat corner slices
-  - Resizable slices to go with slices and vertical slices
-- Copycat sliding/folding doors
-  - Animated doors with separate upper and lower textures. CT can be toggled for each half
-- Copycat panes
-  - Connects to iron bars, glass panes and Copycat flat panes
-- Copycat flat panes
-  - Connects to panes and can be placed horizontally
-- Vertical/Stacked half layers
-  - Rotated versions of Copycat half layers
-- and [a lot of bug fixes and improvements...](https://github.com/copycats-plus/copycats/blob/multiloader/CHANGELOG.md)
+## Downloads
 
-## Features
+- **GitHub**: build from source (below) or grab tagged builds under
+  [Releases](https://github.com/Mantelgen/Mantelcats/releases) when published.
+- **CurseForge / Modrinth**: publishing is set up but not yet enabled — see the open
+  maintainer issues for the remaining configuration steps.
 
-![All decorative copycats](https://cdn.modrinth.com/data/UT2M39wf/images/e86daed566bd26230e283ca4fe6225c11a48a84e.png)
+## Building
 
-![All functional copycats](https://cdn.modrinth.com/data/UT2M39wf/images/246b6b6067699d29d70842364d09dfde86bfde11.png)
+Requires **Java 21** and a checkout **with git tags** (the build derives its version
+from `git describe`):
 
-**All copycats can be toggled on/off using the feature toggle**
+```bash
+git clone https://github.com/Mantelgen/Mantelcats.git
+cd Mantelcats
+git fetch https://github.com/copycats-plus/copycats.git '+refs/tags/*:refs/tags/*'
+./gradlew :neoforge:build
+```
 
-- Copycat Block
-- Copycat Slab
-  - Supports all orientations and double slab variants.
-- Copycat Stairs/Vertical Stairs
-- Copycat Fence
-- Copycat Wall
-- Copycat Vertical Step
-- Copycat Beam
-  - A centered Copycat Step
-- Copycat Slice/Vertical Slice/Corner Slice
-  - Can be resized to 8 different sizes
-- Copycat Ghost Block
-  - Has no collision box
-- Copycat Layer
-  - Can be placed in any orientation and stacks to full block size
-- Copycat Half Panel
-  - Supports 4 orientations on each block face
-- Copycat Pane
-  - Connects to iron bars, glass panes and Copycat Flat Panes
-- Copycat Flat Pane
-  - A flat version of Copycat Pane, can be placed horizontally
-- Copycat Byte
-  - A mini-block. Bytes can be placed/dismantled individually, 8 of which forms a full block
-- Copycat Byte Panel
-  - A quarter of a panel. 4 of which forms a full panel
-- Copycat Board
-  - A 1-pixel thick panel. Multiple boards can be placed in the same block space like glow lichen
-- Copycat Box/Catwalk
-  - A pre-assembled copycat board
-- Copycat Half Layer/Vertical Half Layer/Stacked Half Layer
-  - Can be stacked to full block size with 2 columns of half layers in one block space
-- Copycat Door/Iron Door/Sliding Door/Folding Door
-  - Can toggle CT by shift-R-clicking with an empty hand
-- Copycat Trapdoor/Iron Trapdoor
-- Copycat Fence Gate
-- Copycat Wooden/Stone Button
-- Copycat Wooden/Stone Pressure Plate
-- Copycat Light/Heavy Weighted Pressure Plate
-- Copycat Ladder
-- Copycat Fluid Pipe
-- Copycat Shaft
-- Copycat Cogwheel/Large Cogwheel
+The NeoForge jar lands in `neoforge/build/libs/`. Dev runs are available as
+`:neoforge:runClient` / `:neoforge:runServer`.
 
-## Download
+Known build quirks inherited from upstream:
 
-Find this mod on [**Modrinth**](https://modrinth.com/mod/copycats) or
-[**CurseForge**](https://legacy.curseforge.com/minecraft/mc-mods/copycats).
+- The `:neoforge` module asks for RenderDoc by default; set `CI=true` (or omit
+  `useRenderDoc`) to skip it.
+- The `fabric` module does not currently compile — upstream has the Create dependency
+  commented out pending a 1.21 port, and `CopycatMaterialStore` was removed upstream.
+  NeoForge is the supported loader on this fork.
 
 ## Usage
 
-**In modpacks:**
+Same usage rules as upstream: all copycat blocks work identically — place a copycat,
+right-click it with any block to assign its material, wrench to cycle or toggle
+connected textures. See the
+[upstream wiki](https://github.com/copycats-plus/copycats/wiki) for feature docs.
 
-- You can include this mod in any modpacks.
-- You can make any modifications to the mod with the goal of distributing it in a modpack.
+## License
 
-**In other cases:**
-
-- You can use this mod however you like as long as you obtain the mod via its Modrinth or CurseForge page.
-- You can make any modifications to the mod, but you cannot redistribute it unless you have modified a substantial
-  portion of the mod's code. Changes to resource packs/data packs/mod metadata do not count as code modification.
-
-This mod is open to suggestions, so if you have made any modification to the mod, please leave an issue/PR so I can
-consider adding your use case to the mod.
+The original Copycats+ code is **all rights reserved** by its authors
+([LICENSE](LICENSE)); upstream permits modpack inclusion and modification but requires
+a substantial portion of the code to be modified before redistribution. Please respect
+those terms, and prefer reporting bugs to
+[upstream](https://github.com/copycats-plus/copycats/issues) when they are not
+fork-specific.
 
 ## Contributing
 
-For translations, please visit [our Crowdin page](https://crowdin.com/project/copycats) to contribute.
-
-For code contributions, please read [the wiki](https://github.com/copycats-plus/copycats/wiki) for more info.
-
-## Support
-
-The best way to support our work is to simply download this mod on
-[**Modrinth**](https://modrinth.com/mod/copycats).
-Enjoy a smoother download experience and support open source software with a single click.
+Bug reports and PRs are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Credits
 
-**Translation**
-
-- Some translations are taken from Create: Connected.
-  Thanks [Crowdin contributors](https://crowdin.com/project/create-connected-mod) for providing those
-  translations
-
-**Inspiration**
-
-- The [Create: Addon Hub](https://discord.gg/3AvrppcgG3) discord server
+- [copycats-plus](https://github.com/copycats-plus) — the original mod
+- [Creators of Create](https://github.com/Creators-of-Create/Create) — the Create mod
+  this is an addon for
