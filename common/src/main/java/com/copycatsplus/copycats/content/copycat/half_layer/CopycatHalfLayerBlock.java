@@ -271,25 +271,25 @@ public class CopycatHalfLayerBlock extends WaterloggedMultiStateCopycatBlock imp
             Half half = state.getValue(HALF);
             return CopycatTransformableState.create(t -> {
                 t.addPart(axis == Axis.X ? 12 : 8, half == Half.BOTTOM ? 0 : 16, axis == Axis.Z ? 12 : 8)
-                        .setData(materialOrDefault(be.getMaterialItemStorage().getMaterialItem(POSITIVE_LAYERS.getName())));
+                        .setData(be.getMaterialItemOrDefault(POSITIVE_LAYERS.getName()));
                 t.addPart(axis == Axis.X ? 4 : 8, half == Half.BOTTOM ? 0 : 16, axis == Axis.Z ? 4 : 8)
-                        .setData(materialOrDefault(be.getMaterialItemStorage().getMaterialItem(NEGATIVE_LAYERS.getName())));
+                        .setData(be.getMaterialItemOrDefault(NEGATIVE_LAYERS.getName()));
             });
         } else if (state.is(CCBlocks.COPYCAT_VERTICAL_HALF_LAYER.get())) {
             Direction facing = state.getValue(CopycatVerticalHalfLayerBlock.FACING);
             return CopycatTransformableState.create(t -> {
                 t.addPart(12, 8, 16).rotateY(facing)
-                        .setData(materialOrDefault(be.getMaterialItemStorage().getMaterialItem(POSITIVE_LAYERS.getName())));
+                        .setData(be.getMaterialItemOrDefault(POSITIVE_LAYERS.getName()));
                 t.addPart(4, 8, 16).rotateY(facing)
-                        .setData(materialOrDefault(be.getMaterialItemStorage().getMaterialItem(NEGATIVE_LAYERS.getName())));
+                        .setData(be.getMaterialItemOrDefault(NEGATIVE_LAYERS.getName()));
             });
         } else if (state.is(CCBlocks.COPYCAT_STACKED_HALF_LAYER.get())) {
             Direction facing = state.getValue(CopycatStackedHalfLayerBlock.FACING);
             return CopycatTransformableState.create(t -> {
                 t.addPart(8, 12, 16).rotateY(facing)
-                        .setData(materialOrDefault(be.getMaterialItemStorage().getMaterialItem(POSITIVE_LAYERS.getName())));
+                        .setData(be.getMaterialItemOrDefault(POSITIVE_LAYERS.getName()));
                 t.addPart(8, 4, 16).rotateY(facing)
-                        .setData(materialOrDefault(be.getMaterialItemStorage().getMaterialItem(NEGATIVE_LAYERS.getName())));
+                        .setData(be.getMaterialItemOrDefault(NEGATIVE_LAYERS.getName()));
             });
         } else {
             throw new IllegalArgumentException("Unsupported block state");

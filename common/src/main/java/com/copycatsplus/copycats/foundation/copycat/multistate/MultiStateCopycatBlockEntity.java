@@ -100,7 +100,7 @@ public class MultiStateCopycatBlockEntity extends SmartBlockEntity implements IM
                 BlockEntityUtils.redraw(this);
                 return;
             }
-            MaterialItemStorage.MaterialItem materialItem = materialItemStorage.getMaterialItem(firstProperty);
+            MaterialItemStorage.MaterialItem materialItem = getMaterialItemOrNull(firstProperty);
             if (materialItem != null) {
                 materialItem.setMaterial(copycatBlockEntity.getMaterial());
                 materialItem.setConsumedItem(copycatBlockEntity.getConsumedItem());
@@ -110,7 +110,7 @@ public class MultiStateCopycatBlockEntity extends SmartBlockEntity implements IM
             for (String property : mscb.storageProperties()) {
                 if (mscb.partExists(getBlockState(), property)) {
                     if (!getMaterialItemStorage().hasCustomMaterial(property)) {
-                        MaterialItemStorage.MaterialItem store = materialItemStorage.getMaterialItem(property);
+                        MaterialItemStorage.MaterialItem store = getMaterialItemOrNull(property);
                         if (store != null) {
                             store.setMaterial(copycatBlockEntity.getMaterial());
                             store.setConsumedItem(ItemStack.EMPTY);

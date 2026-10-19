@@ -230,7 +230,7 @@ public interface IMultiStateCopycatBlock extends ICopycatBlock, IStateType {
         if (!consumedItem.isEmpty()) {
             for (String prop : copycatBE.getMaterialItemStorage().getAllProperties()) {
                 if (prop.equals(property)) continue;
-                MaterialItemStorage.MaterialItem materialItem = copycatBE.getMaterialItemStorage().getMaterialItem(prop);
+                MaterialItemStorage.MaterialItem materialItem = copycatBE.getMaterialItemOrNull(prop);
                 if (materialItem != null && materialItem.material().getBlock().equals(material.material().getBlock()) && materialItem.consumedItem().isEmpty()) {
                     copycatBE.setConsumedItem(prop, consumedItem);
                     consumedItem = ItemStack.EMPTY;
@@ -388,7 +388,7 @@ public interface IMultiStateCopycatBlock extends ICopycatBlock, IStateType {
             IMultiStateCopycatBlockEntity copycatBE = getCopycatBlockEntity(level, pos);
             if (copycatBE != null && copycatBE.getMaterialItemStorage() != null)
                 copycatBE.getMaterialItemStorage().getAllProperties().forEach(key -> {
-                    MaterialItemStorage.MaterialItem item = copycatBE.getMaterialItemStorage().getMaterialItem(key);
+                    MaterialItemStorage.MaterialItem item = copycatBE.getMaterialItemOrNull(key);
                     if (item != null)
                         item.setConsumedItem(ItemStack.EMPTY);
                 });
