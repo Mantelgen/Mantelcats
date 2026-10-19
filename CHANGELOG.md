@@ -33,6 +33,16 @@ provenance. Mantelcats tracks upstream `multiloader` plus the fixes listed here.
   alpha/beta/release channel on CurseForge and Modrinth (pending maintainer setup —
   see RELEASING.md)
 
+### Changed
+
+- Reworked multistate material storage into a validated accessor contract:
+  `material_data` NBT gains a `schema` marker, undeclared part keys are rejected
+  on write and dropped on read (migrating poisoned data on first load), and all
+  material access goes through `getMaterialItemOrNull`/`getMaterialItemOrDefault`
+- Rebranded mod metadata to Mantelcats (display name, description, authors,
+  issue tracker, homepage, update JSON). The mod id stays `copycats` so existing
+  worlds, datapacks and material data keep working
+
 ---
 
 ## 3.0.9 - 2026-09-06
