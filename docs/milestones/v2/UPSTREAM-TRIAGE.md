@@ -45,6 +45,7 @@ classified against Mantelcats (`multiloader`, MC 1.21.1 / NeoForge 21.1.x).
 | #127 | Copycat sliding doors — implemented upstream and shipped. |
 | #400 | NPE `bite.x` on migrated copycat byte (Sodium chunk build) — `getVectorFromProperty` null-guards unknown property keys and `MaterialItemStorage.deserialize` drops keys not declared by the storage. |
 | #435 | `MaterialItem.enableCT()` NPE during section batching — all `enableCT()` call sites are null-guarded (`IMultiStateCopycatBlockEntity:103`, `CopycatModelNeoForge:133`, `IMultiStateCopycatBlock:203`). |
+| #327 | `VirtualChunk → LevelChunk` CCE on train assembly — `SyncedBlockEntityMixin` cancels `notifyUpdate` on `VirtualRenderWorld` (the exact crash site). |
 
 ## Likely fixed in the fork (needs one in-game verification)
 
