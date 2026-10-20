@@ -163,7 +163,7 @@ public class CCShapes {
     public static final Map<Direction, MutableShape> VERTICAL_SLOPE =
             forHorizontalDirections(shape(
                     IntStream.range(0, SLOPE_SUBDIVISIONS)
-                            .mapToObj(i -> aabb((i + 1.0) / SLOPE_SUBDIVISIONS * 16.0, 16, 16.0 / SLOPE_SUBDIVISIONS).move(15 - i * 16.0 / SLOPE_SUBDIVISIONS, 0, i * 16.0 / SLOPE_SUBDIVISIONS))
+                            .mapToObj(i -> aabb((i + 1.0) / SLOPE_SUBDIVISIONS * 16.0, 16, 16.0 / SLOPE_SUBDIVISIONS).move(16 - (i + 1.0) * 16.0 / SLOPE_SUBDIVISIONS, 0, i * 16.0 / SLOPE_SUBDIVISIONS))
                             .toArray(MutableAABB[]::new)
             ).outline(
                     line(vec3(0, 0, 16), vec3(16, 0, 16)),
