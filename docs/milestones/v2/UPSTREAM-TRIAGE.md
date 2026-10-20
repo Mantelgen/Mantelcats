@@ -57,15 +57,15 @@ classified against Mantelcats (`multiloader`, MC 1.21.1 / NeoForge 21.1.x).
 | #222 | Crash pasting flipped schematic with sliding doors (1.20.1, logs expired) — same BE-transform-on-paste class as #410 | Paste rotated/mirrored schematic with doors |
 | #227 | No light emission in contraptions — aux-light-manager-less path now delegates to material (PR #24) | Light-emitting material on a contraption |
 | #341, #342 | Copycats not emissive with glowing blocks — block-light level delegation shipped (PR #24) | Glowing/emissive modded blocks as material |
+| #221 | Slopes only reach half height (v2.2.2-era) — current `CCShapes` slope heights reach 16px; reworked in 3.0 | Walk a slope in 1.21.1 |
+| #338 | Doors reject materials (code path verified sound end-to-end; reporter's pack has ~150 mods incl. interaction mods) | Vanilla+mod env check; try other halves/items |
 
 ## Queued bounded bugs (next candidates)
 
 | Issue | Notes |
 |---|---|
 | #175 | Light propagates through opaque-material copycats — **harder than it looks**: 1.21.1 caches `getLightBlock`/`propagatesSkylightDown` per blockstate (position/material-blind), so it needs a light-engine mixin or per-position occlusion strategy, not a simple delegate. Needs design. |
-| #338 | Doors reject materials (1.21.1 NF, user env unclear — code path reads correct; needs in-game repro: which half clicked, which items). |
-| #221 | Slope steepness at half of expected amount — shape/property math. |
-| #290 | Fill multiple copycats with material (feature-ish but small). |
+
 
 ## Environment-dependent (cannot reproduce without third-party setup)
 
@@ -90,7 +90,7 @@ These report against specific mods, loaders, or MC versions outside the fork's
 
 #9, #38, #46, #59, #78, #82, #98, #115, #122, #143, #146, #154, #158, #163,
 #181, #185, #197, #198, #200, #207, #208, #209, #214, #216, #219, #226, #228,
-#246, #256, #263, #271, #272, #289, #293, #294, #295, #330, #332, #337, #346,
+#246, #256, #263, #271, #272, #289, #290, #293, #294, #295, #330, #332, #337, #346,
 #348, #354, #357, #364, #366, #376, #378, #380, #384, #385, #387, #398, #401,
 #405, #418, #424, #426, #432
 
