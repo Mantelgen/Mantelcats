@@ -8,6 +8,8 @@ import com.copycatsplus.copycats.foundation.copycat.IStateType;
 import com.copycatsplus.copycats.utility.BlockEntityUtils;
 import com.copycatsplus.copycats.utility.InteractionUtils;
 import com.simibubi.create.AllBlocks;
+import com.simibubi.create.api.schematic.requirement.SpecialBlockItemRequirement;
+import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -36,7 +38,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class CopycatDoorBlock extends DoorBlock implements ICopycatBlock, IBE<CCCopycatBlockEntity>, IStateType {
+public class CopycatDoorBlock extends DoorBlock implements ICopycatBlock, IBE<CCCopycatBlockEntity>, IStateType, SpecialBlockItemRequirement {
 
     public static BooleanProperty CT = BooleanProperty.create("ct");
 
@@ -85,6 +87,13 @@ public class CopycatDoorBlock extends DoorBlock implements ICopycatBlock, IBE<CC
             return InteractionResult.SUCCESS;
         }
         return InteractionResult.PASS;
+    }
+
+    @Override
+    public ItemRequirement getRequiredItems(BlockState state, @Nullable BlockEntity blockEntity) {
+        if (state.getValue(HALF) == DoubleBlockHalf.UPPER)
+            return ItemRequirement.NONE;
+        return new ItemRequirement(ItemRequirement.ItemUseType.CONSUME, asItem());
     }
 
     @Override
