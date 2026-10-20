@@ -1,6 +1,7 @@
 package com.copycatsplus.copycats.foundation.copycat.multistate;
 
 import com.copycatsplus.copycats.CCKeys;
+import com.copycatsplus.copycats.config.CCConfigs;
 import com.copycatsplus.copycats.compat.AthenaCompat;
 import com.copycatsplus.copycats.compat.Mods;
 import com.copycatsplus.copycats.foundation.copycat.ICopycatBlock;
@@ -310,15 +311,16 @@ public interface IMultiStateCopycatBlock extends ICopycatBlock, IStateType {
         }
 
         boolean freeToApply = copycatBE.getMaterialItemStorage().getAllConsumedItems().stream().anyMatch(s -> s.getItem() == stack.getItem());
+        boolean freeApplication = !player.isCreative() && CCConfigs.server().disableBlockConsumption.get();
 
         copycatBE.setMaterial(property, material);
-        if (!freeToApply)
+        if (!freeToApply && !freeApplication)
             copycatBE.setConsumedItem(property, stack);
         copycatBE.getLevel()
                 .playSound(null, copycatBE.getBlockPos(), material.getSoundType()
                         .getPlaceSound(), SoundSource.BLOCKS, 1, .75f);
 
-        if (player.isCreative())
+        if (player.isCreative() || freeApplication)
             return ItemInteractionResult.SUCCESS;
 
         if (!freeToApply)
@@ -348,12 +350,14 @@ public interface IMultiStateCopycatBlock extends ICopycatBlock, IStateType {
                 continue;
 
             boolean freeToApply = copycatBE.getMaterialItemStorage().getAllConsumedItems().stream().anyMatch(s -> s.getItem() == offhandItem.getItem());
+            boolean freeApplication = !(placer instanceof Player player && player.isCreative())
+                    && CCConfigs.server().disableBlockConsumption.get();
 
             copycatBE.setMaterial(property, appliedState);
-            if (!freeToApply)
+            if (!freeToApply && !freeApplication)
                 copycatBE.setConsumedItem(property, offhandItem);
 
-            if (placer instanceof Player player && player.isCreative())
+            if (placer instanceof Player player && player.isCreative() || freeApplication)
                 continue;
             if (!freeToApply)
                 offhandItem.shrink(1);
