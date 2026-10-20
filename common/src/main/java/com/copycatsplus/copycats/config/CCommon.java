@@ -17,6 +17,8 @@ public class CCommon extends SyncConfigBase {
 
     public final ConfigBool disableMigration = b(false, "disableMigration", Comments.disableMigration);
 
+    public final ConfigBool disableCopycatCats = b(false, "disableCopycatCats", Comments.disableCopycatCats);
+
     public final CFeatures toggle = nested(0, CFeatures::new, Comments.toggle);
 
     public final CFeatureCategories categories = nested(0, CFeatureCategories::new, Comments.categories);
@@ -29,5 +31,7 @@ public class CCommon extends SyncConfigBase {
         static String categories = "Enable/disable categories of features. Disabling a category hides all related features. Values on server override clients";
 
         static String disableMigration = "Disables the migration of placed copycats from old versions to new ones. Setting this to true may cause copycats to lose their textures when you upgrade this mod. Restart the game to apply changes.";
+
+        static String disableCopycatCats = "Disables the Copy Cat easter egg, preventing cats from being turned into copycats. Already converted cats keep their texture and can still be reverted with a wrench.";
     }
 }

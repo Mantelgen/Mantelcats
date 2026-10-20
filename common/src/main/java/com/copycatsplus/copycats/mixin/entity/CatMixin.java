@@ -2,6 +2,7 @@ package com.copycatsplus.copycats.mixin.entity;
 
 import com.copycatsplus.copycats.CCBlocks;
 import com.copycatsplus.copycats.CCCatVariants;
+import com.copycatsplus.copycats.config.CCConfigs;
 import com.simibubi.create.AllTags;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -99,6 +100,7 @@ public abstract class CatMixin extends TamableAnimal {
             method = "usePlayerItem(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/InteractionHand;Lnet/minecraft/world/item/ItemStack;)V"
     )
     private void useCopycat(Player pPlayer, InteractionHand pHand, ItemStack pStack, CallbackInfo ci) {
+        if (CCConfigs.common().disableCopycatCats.get()) return;
         if (pStack.is(CCBlocks.COPYCAT_BLOCK.asItem())) {
             this.playSound(SoundEvents.ITEM_FRAME_ADD_ITEM, 75f, .95f);
         }
@@ -112,6 +114,7 @@ public abstract class CatMixin extends TamableAnimal {
     private void copycatInteract(Player pPlayer, InteractionHand pHand, CallbackInfoReturnable<InteractionResult> cir) {
         ItemStack stack = pPlayer.getItemInHand(pHand);
         if (stack.is(CCBlocks.COPYCAT_BLOCK.asItem())) {
+            if (CCConfigs.common().disableCopycatCats.get()) return;
             Holder<CatVariant> currentVariant = getVariant();
             if (currentVariant.equals(CCCatVariants.COPY_CAT)) return;
 
