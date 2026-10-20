@@ -3,7 +3,7 @@ package com.copycatsplus.copycats.content.copycat.door;
 import com.copycatsplus.copycats.foundation.copycat.model.CopycatModelCore;
 import com.copycatsplus.copycats.foundation.copycat.model.assembly.AssemblyTransform;
 import com.copycatsplus.copycats.foundation.copycat.model.assembly.CopycatRenderContext;
-import net.minecraft.world.level.block.ButtonBlock;
+import com.copycatsplus.copycats.foundation.copycat.model.assembly.quad.QuadTransform;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoorHingeSide;
@@ -35,52 +35,72 @@ public class CopycatDoorModelCore extends CopycatModelCore {
         }
     }
 
+    /**
+     * When the door is open, the panel swings 90 degrees onto the hinge-side edge. The open model
+     * must reuse the same material face as the closed model so the texture rotates rigidly with
+     * the panel like vanilla doors, rather than sampling a different face of the material. The
+     * swing is applied as a quad transform so it only moves the copied vertices: putting it in
+     * the assembly transform would rotate the source selection too and leave the output
+     * identical to the closed state.
+     */
+    private static final QuadTransform[] NO_SWING = new QuadTransform[0];
+    private static final QuadTransform[] SWING = {rotate(pivot(8, 8, 8), angle(0, 90, 0))};
+
     private static void assembleWithCT(BlockState state, CopycatRenderContext context) {
         int rot = (int) state.getValue(DoorBlock.FACING).toYRot();
         boolean rightHinge = state.getValue(DoorBlock.HINGE).equals(DoorHingeSide.RIGHT);
         DoubleBlockHalf half = state.getValue(DoorBlock.HALF);
         boolean open = state.getValue(DoorBlock.OPEN);
-        AssemblyTransform transform = open
-                ? rightHinge ? t -> t.rotateY(rot - 90) : t -> t.flipX(true).rotateY(rot + 90)
-                : t -> t.rotateY(rot);
+        AssemblyTransform transform = t -> t.rotateY(rot);
+        if (open && !rightHinge)
+            transform = t -> t.flipX(true).rotateY(rot);
+        QuadTransform[] swing = open ? SWING : NO_SWING;
         if (half == DoubleBlockHalf.LOWER) {
             //Front
             context.assemblePiece(transform,
                     vec3(0, 0, 0),
                     aabb(16, 12, 2),
-                    cull(SOUTH | UP));
+                    cull(SOUTH | UP),
+                    swing);
             context.assemblePiece(transform,
                     vec3(0, 12, 0),
                     aabb(16, 4, 2).move(0, 4, 0),
-                    cull(SOUTH | DOWN));
+                    cull(SOUTH | DOWN),
+                    swing);
             //Back
             context.assemblePiece(transform,
                     vec3(0, 0, 2),
                     aabb(16, 12, 1).move(0, 0, 15),
-                    cull(NORTH | UP));
+                    cull(NORTH | UP),
+                    swing);
             context.assemblePiece(transform,
                     vec3(0, 12, 2),
                     aabb(16, 4, 1).move(0, 4, 15),
-                    cull(NORTH | DOWN));
+                    cull(NORTH | DOWN),
+                    swing);
         } else {
             //Front
             context.assemblePiece(transform,
                     vec3(0, 4, 0),
                     aabb(16, 12, 2).move(0, 4, 0),
-                    cull(SOUTH | DOWN));
+                    cull(SOUTH | DOWN),
+                    swing);
             context.assemblePiece(transform,
                     vec3(0, 0, 0),
                     aabb(16, 4, 2).move(0, 8, 0),
-                    cull(SOUTH | UP));
+                    cull(SOUTH | UP),
+                    swing);
             //Back
             context.assemblePiece(transform,
                     vec3(0, 4, 2),
                     aabb(16, 12, 1).move(0, 4, 15),
-                    cull(NORTH | DOWN));
+                    cull(NORTH | DOWN),
+                    swing);
             context.assemblePiece(transform,
                     vec3(0, 0, 2),
                     aabb(16, 4, 1).move(0, 8, 15),
-                    cull(NORTH | UP));
+                    cull(NORTH | UP),
+                    swing);
         }
     }
 
@@ -89,31 +109,36 @@ public class CopycatDoorModelCore extends CopycatModelCore {
         boolean rightHinge = state.getValue(DoorBlock.HINGE).equals(DoorHingeSide.RIGHT);
         DoubleBlockHalf half = state.getValue(DoorBlock.HALF);
         boolean open = state.getValue(DoorBlock.OPEN);
-        AssemblyTransform transform = open
-                ? rightHinge ? t -> t.rotateY(rot - 90) : t -> t.flipX(true).rotateY(rot + 90)
-                : t -> t.rotateY(rot);
+        AssemblyTransform transform = t -> t.rotateY(rot);
+        if (open && !rightHinge)
+            transform = t -> t.flipX(true).rotateY(rot);
+        QuadTransform[] swing = open ? SWING : NO_SWING;
         if (half == DoubleBlockHalf.LOWER) {
             //Front
             context.assemblePiece(transform,
                     vec3(0, 0, 0),
                     aabb(16, 16, 2),
-                    cull(SOUTH));
+                    cull(SOUTH),
+                    swing);
             //Back
             context.assemblePiece(transform,
                     vec3(0, 0, 2),
                     aabb(16, 16, 1).move(0, 0, 15),
-                    cull(NORTH));
+                    cull(NORTH),
+                    swing);
         } else {
             //Front
             context.assemblePiece(transform,
                     vec3(0, 0, 0),
                     aabb(16, 16, 2).move(0, 0, 0),
-                    cull(SOUTH));
+                    cull(SOUTH),
+                    swing);
             //Back
             context.assemblePiece(transform,
                     vec3(0, 0, 2),
                     aabb(16, 16, 1).move(0, 0, 15),
-                    cull(NORTH));
+                    cull(NORTH),
+                    swing);
         }
     }
 }
