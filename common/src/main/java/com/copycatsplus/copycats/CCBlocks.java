@@ -593,6 +593,8 @@ public class CCBlocks {
                             CopycatCharacteristics.COPYCAT,
                             CopycatCharacteristics.FUNCTIONAL
                     ))
+                    .tag(ItemTags.TRAPDOORS)
+                    .tag(ItemTags.WOODEN_TRAPDOORS)
                     .transform(customItemModel("copycat_base", "trapdoor"))
                     .register();
 
@@ -608,6 +610,7 @@ public class CCBlocks {
                             CopycatCharacteristics.COPYCAT,
                             CopycatCharacteristics.FUNCTIONAL
                     ))
+                    .tag(ItemTags.TRAPDOORS)
                     .transform(customItemModel("copycat_base", "trapdoor"))
                     .register();
 
@@ -770,6 +773,8 @@ public class CCBlocks {
                     .onRegister(interactionBehaviour(new DoorMovingInteraction()))
                     .onRegister(onClient(() -> createBlockModel(CopycatDoorModelCore::new)))
                     .onRegister(b -> registerBrittleCheck(state -> state.getBlock() == b ? CheckResult.SUCCESS : CheckResult.PASS))
+                    .tag(BlockTags.DOORS)
+                    .tag(BlockTags.WOODEN_DOORS) // for villager AI
                     .loot((lr, block) -> lr.add(block, lr.createDoorTable(block)))
                     .item()
                     .onRegister(CopycatDescription.register(
@@ -789,6 +794,7 @@ public class CCBlocks {
                     .onRegister(onClient(() -> createBlockModel(CopycatDoorModelCore::new)))
                     .onRegister(interactionBehaviour(new DoorMovingInteraction()))
                     .onRegister(b -> registerBrittleCheck(state -> state.getBlock() == b ? CheckResult.SUCCESS : CheckResult.PASS))
+                    .tag(BlockTags.DOORS)
                     .loot((lr, block) -> lr.add(block, lr.createDoorTable(block)))
                     .item()
                     .onRegister(CopycatDescription.register(
@@ -796,6 +802,7 @@ public class CCBlocks {
                             CopycatCharacteristics.CT_TOGGLE,
                             CopycatCharacteristics.FUNCTIONAL
                     ))
+                    .tag(ItemTags.DOORS)
                     .transform(customItemModel("copycat_base", "door"))
                     .register();
 
