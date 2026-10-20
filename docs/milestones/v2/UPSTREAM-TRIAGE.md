@@ -21,7 +21,7 @@ classified against Mantelcats (`multiloader`, MC 1.21.1 / NeoForge 21.1.x).
 | #182 | Modded light emission not delegated on NeoForge | PR #24 |
 | #334 | Door texture doesn't rotate with panel when opened | PR #23 |
 | #410 | Materials lose part assignment on structure rotate/mirror (BE NBT never transformed) | PR #25 |
-| #307 | Adjacent boards cull front board's interior back face | PR #26 |
+| #307 | Adjacent boards cull front board's interior back face | PR #26 + PR #30 (board `getPartialFaceShape` was degenerate) |
 | #412 | Doors/sliding doors counted 2× by schematicannon (per-half requirements) | PR #27 |
 | #414 | NPE in `MigrationManager.migrateStructure` | PR #6 (merged) |
 | #417, #420 | Memory leak: multistate BEs never released | PR #3 (merged) |
