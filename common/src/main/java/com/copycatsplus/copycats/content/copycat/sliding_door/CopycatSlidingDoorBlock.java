@@ -7,7 +7,9 @@ import com.copycatsplus.copycats.foundation.copycat.ICopycatBlockEntity;
 import com.copycatsplus.copycats.utility.BlockEntityUtils;
 import com.copycatsplus.copycats.utility.InteractionUtils;
 import com.simibubi.create.AllBlocks;
+import com.simibubi.create.api.schematic.requirement.SpecialBlockItemRequirement;
 import com.simibubi.create.content.decoration.slidingDoor.SlidingDoorBlock;
+import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -39,7 +41,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class CopycatSlidingDoorBlock extends SlidingDoorBlock implements ICopycatBlock {
+public class CopycatSlidingDoorBlock extends SlidingDoorBlock implements ICopycatBlock, SpecialBlockItemRequirement {
 
     public static BooleanProperty CT = CopycatDoorBlock.CT;
 
@@ -55,6 +57,13 @@ public class CopycatSlidingDoorBlock extends SlidingDoorBlock implements ICopyca
 
     public static CopycatSlidingDoorBlock metal(Properties properties, boolean folds) {
         return new CopycatSlidingDoorBlock(properties, TRAIN_SET_TYPE.get(), folds);
+    }
+
+    @Override
+    public ItemRequirement getRequiredItems(BlockState state, @Nullable BlockEntity blockEntity) {
+        if (state.getValue(HALF) == DoubleBlockHalf.UPPER)
+            return ItemRequirement.NONE;
+        return new ItemRequirement(ItemRequirement.ItemUseType.CONSUME, asItem());
     }
 
     @Override
