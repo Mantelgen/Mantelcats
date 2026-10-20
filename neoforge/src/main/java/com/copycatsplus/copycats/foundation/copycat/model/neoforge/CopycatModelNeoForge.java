@@ -320,12 +320,17 @@ public class CopycatModelNeoForge extends BakedModelWrapperWithData {
                     .orElse(materials.entrySet().iterator().next());
 
             ModelData wrapped = getWrappedData(data).get(key.getKey());
-            return getModelOf(key.getValue()).getParticleIcon(wrapped == null ? data : wrapped);
+            return getModelOf(key.getValue()).getParticleIcon(wrapped == null ? ModelData.EMPTY : wrapped);
         }
 
         BlockState material = getMaterial(data);
         ModelData wrapped = getWrappedData(data).get(MATERIAL_KEY);
-        return getModelOf(material).getParticleIcon(wrapped == null ? data : wrapped);
+        return getModelOf(material).getParticleIcon(wrapped == null ? ModelData.EMPTY : wrapped);
+    }
+
+    @Override
+    public @NotNull TextureAtlasSprite getParticleIcon() {
+        return getParticleIcon(ModelData.EMPTY);
     }
 
     public static @NotNull BlockState getMaterial(ModelData data) {
