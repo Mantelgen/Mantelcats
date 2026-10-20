@@ -106,6 +106,7 @@ public class CopycatRenderContextFabric extends CopycatRenderContext.Base<List<M
             dest.uv(i, mutableQuad.vertices.get(i).uv.u, mutableQuad.vertices.get(i).uv.v);
         }
         dest.cullFace(mutableQuad.cullFace);
+        dest.nominalFace(mutableQuad.computeLightFace());
         dest.emit();
     }
 
