@@ -311,17 +311,26 @@ public class CopycatModelNeoForge extends BakedModelWrapperWithData {
 
     @Override
     public @NotNull TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
-        @NotNull Map<String, BlockState> material = getMaterials(data);
+        @NotNull Map<String, BlockState> materials = getMaterials(data);
 
-        if (material.isEmpty())
-            return super.getParticleIcon(data);
+        if (!materials.isEmpty()) {
+            Map.Entry<String, BlockState> key = materials.entrySet().stream()
+                    .filter(s -> !s.getValue().is(AllBlocks.COPYCAT_BASE.get()))
+                    .findFirst()
+                    .orElse(materials.entrySet().iterator().next());
 
-        Map.Entry<String, BlockState> key = material.entrySet().stream()
-                .filter(s -> !s.getValue().is(AllBlocks.COPYCAT_BASE.get()))
-                .findFirst()
-                .orElse(material.entrySet().iterator().next());
+            ModelData wrapped = getWrappedData(data).get(key.getKey());
+            return getModelOf(key.getValue()).getParticleIcon(wrapped == null ? ModelData.EMPTY : wrapped);
+        }
 
-        return getModelOf(key.getValue()).getParticleIcon(getWrappedData(data).get(key.getKey()));
+        BlockState material = getMaterial(data);
+        ModelData wrapped = getWrappedData(data).get(MATERIAL_KEY);
+        return getModelOf(material).getParticleIcon(wrapped == null ? ModelData.EMPTY : wrapped);
+    }
+
+    @Override
+    public @NotNull TextureAtlasSprite getParticleIcon() {
+        return getParticleIcon(ModelData.EMPTY);
     }
 
     public static @NotNull BlockState getMaterial(ModelData data) {
