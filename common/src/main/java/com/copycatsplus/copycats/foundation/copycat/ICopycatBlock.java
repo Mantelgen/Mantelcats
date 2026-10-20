@@ -258,15 +258,15 @@ public interface ICopycatBlock extends IWrenchable, IStateType, TransformableBlo
         if (level.isClientSide())
             return ItemInteractionResult.SUCCESS;
 
-        boolean freeApplication = !player.isCreative() && CCConfigs.server().disableBlockConsumption.get();
+        boolean consumptionDisabled = !player.isCreative() && CCConfigs.server().disableBlockConsumption.get();
         copycatBE.setMaterial(material);
-        if (!freeApplication)
+        if (!consumptionDisabled)
             copycatBE.setConsumedItem(stack);
         copycatBE.getLevel()
                 .playSound(null, copycatBE.getBlockPos(), material.getSoundType()
                         .getPlaceSound(), SoundSource.BLOCKS, 1, .75f);
 
-        if (player.isCreative() || freeApplication)
+        if (player.isCreative() || consumptionDisabled)
             return ItemInteractionResult.SUCCESS;
 
         stack.shrink(1);
@@ -290,13 +290,13 @@ public interface ICopycatBlock extends IWrenchable, IStateType, TransformableBlo
         if (copycatBE.hasCustomMaterial())
             return;
 
-        boolean freeApplication = !(placer instanceof Player player && player.isCreative())
-                && CCConfigs.server().disableBlockConsumption.get();
+        boolean consumptionDisabled = !(placer instanceof Player player && player.isCreative())
+                && CCConfigs.safeGetter(() -> CCConfigs.server().disableBlockConsumption.get(), false).get();
         copycatBE.setMaterial(appliedState);
-        if (!freeApplication)
+        if (!consumptionDisabled)
             copycatBE.setConsumedItem(offhandItem);
 
-        if (placer instanceof Player player && player.isCreative() || freeApplication)
+        if ((placer instanceof Player player && player.isCreative()) || consumptionDisabled)
             return;
         offhandItem.shrink(1);
         if (offhandItem.isEmpty())
