@@ -324,6 +324,7 @@ public class CCBlocks {
                     .transform(CCBuilderTransformers.copycat())
                     .properties(p -> p.isValidSpawn((state, level, pos, entity) -> false)
                             .noCollission())
+                    .tag(AllTags.AllBlockTags.MOVABLE_EMPTY_COLLIDER.tag)
                     .transform(FeatureToggle.register())
                     .onRegister(onClient(() -> createBlockModel(CopycatGhostBlockModelCore::new)))
                     .item()
