@@ -1,6 +1,7 @@
 package com.copycatsplus.copycats.foundation.copycat.multistate;
 
 import com.copycatsplus.copycats.CCKeys;
+import com.copycatsplus.copycats.config.CCConfigs;
 import com.copycatsplus.copycats.compat.AthenaCompat;
 import com.copycatsplus.copycats.compat.Mods;
 import com.copycatsplus.copycats.foundation.copycat.ICopycatBlock;
@@ -310,15 +311,16 @@ public interface IMultiStateCopycatBlock extends ICopycatBlock, IStateType {
         }
 
         boolean freeToApply = copycatBE.getMaterialItemStorage().getAllConsumedItems().stream().anyMatch(s -> s.getItem() == stack.getItem());
+        boolean consumptionDisabled = !player.isCreative() && CCConfigs.server().disableBlockConsumption.get();
 
         copycatBE.setMaterial(property, material);
-        if (!freeToApply)
+        if (!freeToApply && !consumptionDisabled)
             copycatBE.setConsumedItem(property, stack);
         copycatBE.getLevel()
                 .playSound(null, copycatBE.getBlockPos(), material.getSoundType()
                         .getPlaceSound(), SoundSource.BLOCKS, 1, .75f);
 
-        if (player.isCreative())
+        if (player.isCreative() || consumptionDisabled)
             return ItemInteractionResult.SUCCESS;
 
         if (!freeToApply)
@@ -341,6 +343,8 @@ public interface IMultiStateCopycatBlock extends ICopycatBlock, IStateType {
         IMultiStateCopycatBlockEntity copycatBE = getCopycatBlockEntity(level, pos);
         if (copycatBE == null || copycatBE.getMaterialItemStorage() == null)
             return;
+        boolean consumptionDisabled = !(placer instanceof Player player && player.isCreative())
+                && CCConfigs.safeGetter(() -> CCConfigs.server().disableBlockConsumption.get(), false).get();
         for (String property : this.storageProperties()) {
             if (!partExists(state, property))
                 continue;
@@ -350,10 +354,10 @@ public interface IMultiStateCopycatBlock extends ICopycatBlock, IStateType {
             boolean freeToApply = copycatBE.getMaterialItemStorage().getAllConsumedItems().stream().anyMatch(s -> s.getItem() == offhandItem.getItem());
 
             copycatBE.setMaterial(property, appliedState);
-            if (!freeToApply)
+            if (!freeToApply && !consumptionDisabled)
                 copycatBE.setConsumedItem(property, offhandItem);
 
-            if (placer instanceof Player player && player.isCreative())
+            if ((placer instanceof Player player && player.isCreative()) || consumptionDisabled)
                 continue;
             if (!freeToApply)
                 offhandItem.shrink(1);

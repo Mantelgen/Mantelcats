@@ -1,5 +1,6 @@
 package com.copycatsplus.copycats.foundation.copycat;
 
+import com.copycatsplus.copycats.config.CCConfigs;
 import com.copycatsplus.copycats.foundation.copycat.model.ScaledBlockAndTintGetter;
 import com.copycatsplus.copycats.foundation.copycat.multistate.IMultiStateCopycatBlock;
 import com.copycatsplus.copycats.utility.BlockEntityUtils;
@@ -257,13 +258,15 @@ public interface ICopycatBlock extends IWrenchable, IStateType, TransformableBlo
         if (level.isClientSide())
             return ItemInteractionResult.SUCCESS;
 
+        boolean consumptionDisabled = !player.isCreative() && CCConfigs.server().disableBlockConsumption.get();
         copycatBE.setMaterial(material);
-        copycatBE.setConsumedItem(stack);
+        if (!consumptionDisabled)
+            copycatBE.setConsumedItem(stack);
         copycatBE.getLevel()
                 .playSound(null, copycatBE.getBlockPos(), material.getSoundType()
                         .getPlaceSound(), SoundSource.BLOCKS, 1, .75f);
 
-        if (player.isCreative())
+        if (player.isCreative() || consumptionDisabled)
             return ItemInteractionResult.SUCCESS;
 
         stack.shrink(1);
@@ -287,10 +290,13 @@ public interface ICopycatBlock extends IWrenchable, IStateType, TransformableBlo
         if (copycatBE.hasCustomMaterial())
             return;
 
+        boolean consumptionDisabled = !(placer instanceof Player player && player.isCreative())
+                && CCConfigs.safeGetter(() -> CCConfigs.server().disableBlockConsumption.get(), false).get();
         copycatBE.setMaterial(appliedState);
-        copycatBE.setConsumedItem(offhandItem);
+        if (!consumptionDisabled)
+            copycatBE.setConsumedItem(offhandItem);
 
-        if (placer instanceof Player player && player.isCreative())
+        if ((placer instanceof Player player && player.isCreative()) || consumptionDisabled)
             return;
         offhandItem.shrink(1);
         if (offhandItem.isEmpty())
