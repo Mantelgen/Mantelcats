@@ -623,7 +623,7 @@ public interface ICopycatBlock extends IWrenchable, IStateType, TransformableBlo
             CopycatExternalContext.setPropertyForAppearance(null);
         }
 
-        if (BlockFaceUtils.canOcclude(level, neighborState, toPos, state, pos, dir.getOpposite())) {
+        if (BlockFaceUtils.canOcclude(level, level.getBlockState(toPos), toPos, state, pos, dir.getOpposite())) {
             BlockState material = state.getBlock() instanceof IMultiStateCopycatBlock
                     ? IMultiStateCopycatBlock.getMaterial(level, pos, CopycatExternalContext.getPropertyForAppearance())
                     : state.getBlock() instanceof ICopycatBlock ? ICopycatBlock.getMaterial(level, pos) : state;
