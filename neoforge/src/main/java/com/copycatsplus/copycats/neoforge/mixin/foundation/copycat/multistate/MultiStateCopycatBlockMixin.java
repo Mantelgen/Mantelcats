@@ -219,18 +219,18 @@ public abstract class MultiStateCopycatBlockMixin extends Block implements IBloc
      * They do not actually overwrite the corresponding methods.
      */
     @Override
-    @Unique
+    @Unique(silent = true)
     public abstract BlockState rotate(BlockState state, Rotation rotation);
 
     @Override
-    @Unique
+    @Unique(silent = true)
     public abstract BlockState mirror(@NotNull BlockState pState, @NotNull Mirror pMirror);
 
     @Override
-    @Unique
+    @Unique(silent = true)
     public abstract ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult);
 
     @Override
-    @Unique
+    @Unique(silent = true)
     public abstract InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult);
 }

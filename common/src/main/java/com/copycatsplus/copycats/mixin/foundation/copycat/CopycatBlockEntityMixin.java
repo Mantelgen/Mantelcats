@@ -53,7 +53,7 @@ public abstract class CopycatBlockEntityMixin implements ICopycatBlockEntity {
     }
 
     @Override
-    @Unique
+    @Unique(silent = true)
     public void onLoad() {
         ICopycatBlockEntity.super.onLoad();
     }

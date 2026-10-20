@@ -36,7 +36,7 @@ public abstract class CopycatBlockEntityMixin extends SmartBlockEntity implement
     }
 
     @Override
-    @Unique
+    @Unique(silent = true)
     public void onLoad() {
         super.onLoad();
     }
