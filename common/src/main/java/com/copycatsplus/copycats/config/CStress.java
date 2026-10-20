@@ -1,7 +1,6 @@
 package com.copycatsplus.copycats.config;
 
 import com.copycatsplus.copycats.Copycats;
-import com.simibubi.create.Create;
 import com.tterrag.registrate.builders.BlockBuilder;
 import com.tterrag.registrate.util.nullness.NonNullUnaryOperator;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
@@ -75,7 +74,7 @@ public class CStress extends ConfigBase {
     public static <B extends Block, P> NonNullUnaryOperator<BlockBuilder<B, P>> setImpact(double value) {
         return (builder) -> {
             assertFromCreate(builder);
-            ResourceLocation id = Create.asResource(builder.getName());
+            ResourceLocation id = Copycats.asResource(builder.getName());
             DEFAULT_IMPACTS.put(id, value);
             return builder;
         };
@@ -84,7 +83,7 @@ public class CStress extends ConfigBase {
     public static <B extends Block, P> NonNullUnaryOperator<BlockBuilder<B, P>> setCapacity(double value) {
         return (builder) -> {
             assertFromCreate(builder);
-            ResourceLocation id = Create.asResource(builder.getName());
+            ResourceLocation id = Copycats.asResource(builder.getName());
             DEFAULT_CAPACITIES.put(id, value);
             return builder;
         };

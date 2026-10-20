@@ -2,6 +2,7 @@ package com.copycatsplus.copycats.config.fabric;
 
 import com.copycatsplus.copycats.Copycats;
 import com.copycatsplus.copycats.config.*;
+import com.simibubi.create.api.stress.BlockStressValues;
 import com.simibubi.create.foundation.config.ConfigBase;
 import fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry;
 import fuzs.forgeconfigapiport.api.config.v2.ModConfigEvents;
@@ -35,5 +36,9 @@ public class CCConfigsImpl extends CCConfigs {
 
         ModConfigEvents.loading(Copycats.MODID).register(CCConfigsImpl::onLoad);
         ModConfigEvents.reloading(Copycats.MODID).register(CCConfigsImpl::onReload);
+
+        CStress stress = server().stress;
+        BlockStressValues.IMPACTS.registerProvider(stress::getImpact);
+        BlockStressValues.CAPACITIES.registerProvider(stress::getCapacity);
     }
 }
