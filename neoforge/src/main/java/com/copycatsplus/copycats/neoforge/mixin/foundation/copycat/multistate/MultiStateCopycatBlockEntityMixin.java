@@ -35,7 +35,7 @@ public abstract class MultiStateCopycatBlockEntityMixin extends SmartBlockEntity
     }
 
     @Override
-    @Unique
+    @Unique(silent = true)
     public void onLoad() {
         super.onLoad();
     }

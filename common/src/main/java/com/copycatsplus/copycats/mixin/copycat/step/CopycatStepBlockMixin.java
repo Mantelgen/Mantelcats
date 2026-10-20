@@ -52,7 +52,7 @@ public abstract class CopycatStepBlockMixin extends WaterloggedCopycatBlock impl
     }
 
     @Override
-    @Unique
+    @Unique(silent = true)
     public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
     }

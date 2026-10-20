@@ -49,7 +49,7 @@ public abstract class CopycatPanelBlockMixin extends WaterloggedCopycatBlock imp
     }
 
     @Override
-    @Unique
+    @Unique(silent = true)
     public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
     }
@@ -101,13 +101,13 @@ public abstract class CopycatPanelBlockMixin extends WaterloggedCopycatBlock imp
     }
 
     @Override
-    @Unique
+    @Unique(silent = true)
     public @NotNull BlockState mirror(@NotNull BlockState pState, @NotNull Mirror pMirror) {
         return super.mirror(pState, pMirror);
     }
 
     @Override
-    @Unique
+    @Unique(silent = true)
     public @NotNull BlockState rotate(@NotNull BlockState pState, Rotation pRot) {
         return super.rotate(pState, pRot);
     }
