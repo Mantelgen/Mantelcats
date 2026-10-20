@@ -2,6 +2,7 @@ package com.copycatsplus.copycats.config.neoforge;
 
 import com.copycatsplus.copycats.Copycats;
 import com.copycatsplus.copycats.config.*;
+import com.simibubi.create.api.stress.BlockStressValues;
 import net.createmod.catnip.config.ConfigBase;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -40,5 +41,9 @@ public class CCConfigsImpl extends CCConfigs {
 
         for (Map.Entry<ModConfig.Type, ConfigBase> pair : CONFIGS.entrySet())
             context.getActiveContainer().registerConfig(pair.getKey(), pair.getValue().specification);
+
+        CStress stress = server().stress;
+        BlockStressValues.IMPACTS.registerProvider(stress::getImpact);
+        BlockStressValues.CAPACITIES.registerProvider(stress::getCapacity);
     }
 }
