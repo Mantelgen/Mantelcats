@@ -90,7 +90,7 @@ public abstract class CopycatBlockMixin extends Block implements ICopycatBlock {
         if (lightManager != null)
             return lightManager.getLightAt(pos);
 
-        return super.getLightEmission(state, level, pos);
+        return getMaterial(level, pos).getLightEmission(level, pos);
     }
 
     @Override

@@ -29,6 +29,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Unique;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -92,6 +93,15 @@ public abstract class MultiStateCopycatBlockMixin extends Block implements IBloc
         if (lightManager != null)
             return lightManager.getLightAt(pos);
 
+        if (state.getBlock() instanceof IMultiStateCopycatBlock copycatBlock) {
+            IMultiStateCopycatBlockEntity copycatBE = copycatBlock.getCopycatBlockEntity(level, pos);
+            if (copycatBE == null || copycatBE.getMaterialItemStorage() == null)
+                return super.getLightEmission(state, level, pos);
+            AtomicInteger light = new AtomicInteger(0);
+            copycatBE.getMaterialItemStorage().getAllMaterials().forEach(bs ->
+                    light.accumulateAndGet(bs.getLightEmission(level, pos), Math::max));
+            return light.get();
+        }
         return super.getLightEmission(state, level, pos);
     }
 
