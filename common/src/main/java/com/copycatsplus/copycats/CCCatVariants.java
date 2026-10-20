@@ -1,5 +1,6 @@
 package com.copycatsplus.copycats;
 
+import com.copycatsplus.copycats.config.FeatureToggle;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.createmod.catnip.data.Pair;
 import net.minecraft.core.Holder;
@@ -18,6 +19,7 @@ public class CCCatVariants {
     public static final Holder.Reference<CatVariant> COPY_CAT = register("copy_cat", Copycats.asResource("textures/entity/cat/copy_cat.png"));
 
     private static Holder.Reference<CatVariant> register(String key, ResourceLocation texture) {
+        FeatureToggle.register(Copycats.asResource(key));
         Pair<Holder.Reference<CatVariant>, ResourceLocation> pair = Pair.of(Holder.Reference.createStandAlone(
                 BuiltInRegistries.CAT_VARIANT.holderOwner(),
                 ResourceKey.create(Registries.CAT_VARIANT, Copycats.asResource(key))

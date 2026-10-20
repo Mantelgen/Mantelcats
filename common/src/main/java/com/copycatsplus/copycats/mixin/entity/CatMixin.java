@@ -2,6 +2,9 @@ package com.copycatsplus.copycats.mixin.entity;
 
 import com.copycatsplus.copycats.CCBlocks;
 import com.copycatsplus.copycats.CCCatVariants;
+import com.copycatsplus.copycats.Copycats;
+import com.copycatsplus.copycats.config.FeatureToggle;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.simibubi.create.AllTags;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -99,6 +102,7 @@ public abstract class CatMixin extends TamableAnimal {
             method = "usePlayerItem(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/InteractionHand;Lnet/minecraft/world/item/ItemStack;)V"
     )
     private void useCopycat(Player pPlayer, InteractionHand pHand, ItemStack pStack, CallbackInfo ci) {
+        if (!FeatureToggle.isEnabled(Copycats.asResource("copy_cat"))) return;
         if (pStack.is(CCBlocks.COPYCAT_BLOCK.asItem())) {
             this.playSound(SoundEvents.ITEM_FRAME_ADD_ITEM, 75f, .95f);
         }
@@ -112,6 +116,7 @@ public abstract class CatMixin extends TamableAnimal {
     private void copycatInteract(Player pPlayer, InteractionHand pHand, CallbackInfoReturnable<InteractionResult> cir) {
         ItemStack stack = pPlayer.getItemInHand(pHand);
         if (stack.is(CCBlocks.COPYCAT_BLOCK.asItem())) {
+            if (!FeatureToggle.isEnabled(Copycats.asResource("copy_cat"))) return;
             Holder<CatVariant> currentVariant = getVariant();
             if (currentVariant.equals(CCCatVariants.COPY_CAT)) return;
 
@@ -135,5 +140,22 @@ public abstract class CatMixin extends TamableAnimal {
             }
             cir.setReturnValue(InteractionResult.sidedSuccess(level().isClientSide()));
         }
+    }
+
+    /**
+     * Substitute a vanilla black cat when the copy cat feature is disabled, so cats cannot
+     * naturally spawn as copy cats from the full moon spawn pool.
+     */
+    @ModifyExpressionValue(
+            method = "finalizeSpawn(Lnet/minecraft/world/level/ServerLevelAccessor;Lnet/minecraft/world/DifficultyInstance;Lnet/minecraft/world/entity/MobSpawnType;Lnet/minecraft/world/entity/SpawnGroupData;)Lnet/minecraft/world/entity/SpawnGroupData;",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/core/Registry;getRandomElementOf(Lnet/minecraft/tags/TagKey;Lnet/minecraft/util/RandomSource;)Ljava/util/Optional;")
+    )
+    private Optional<Holder.Reference<CatVariant>> gateCopyCatNaturalSpawn(Optional<Holder.Reference<CatVariant>> original) {
+        if (!FeatureToggle.isEnabled(Copycats.asResource("copy_cat"))
+                && original.isPresent()
+                && original.get().equals(CCCatVariants.COPY_CAT)) {
+            return BuiltInRegistries.CAT_VARIANT.getHolder(CatVariant.BLACK);
+        }
+        return original;
     }
 }
