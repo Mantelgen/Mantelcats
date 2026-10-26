@@ -1,0 +1,24 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "mantelcats:feature_enabled",
+      "feature": "mantelcats:copycat_slab",
+      "invert": false
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "p": {
+      "item": "create:copycat_panel"
+    }
+  },
+  "pattern": [
+    "p",
+    "p"
+  ],
+  "result": {
+    "count": 1,
+    "id": "mantelcats:copycat_slab"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "type": "porting_lib:conditional",
+  "recipes": [
+    {
+      "fabric:load_conditions": [
+        {
+          "condition": "mantelcats:feature_enabled",
+          "feature": "mantelcats:copycat_catwalk",
+          "invert": false
+        }
+      ],
+      "recipe": {
+        "type": "minecraft:crafting_shaped",
+        "category": "misc",
+        "key": {
+          "s": {
+            "tag": "mantelcats:copycat_board"
+          }
+        },
+        "pattern": [
+          "s s",
+          " s "
+        ],
+        "result": {
+          "item": "mantelcats:copycat_catwalk"
+        },
+        "show_notification": true
+      }
+    }
+  ]
+}

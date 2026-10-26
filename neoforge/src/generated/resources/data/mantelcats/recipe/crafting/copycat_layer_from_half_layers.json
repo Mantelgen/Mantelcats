@@ -1,0 +1,23 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "mantelcats:feature_enabled",
+      "feature": "mantelcats:copycat_half_layer",
+      "invert": false
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "s": {
+      "item": "mantelcats:copycat_half_layer"
+    }
+  },
+  "pattern": [
+    "ss"
+  ],
+  "result": {
+    "count": 1,
+    "id": "mantelcats:copycat_layer"
+  }
+}

@@ -1,7 +1,7 @@
 {
   "replace": false,
   "values": [
-    "copycats:copycat_stairs",
-    "copycats:copycat_vertical_stairs"
+    "mantelcats:copycat_stairs",
+    "mantelcats:copycat_vertical_stairs"
   ]
 }

@@ -1,0 +1,22 @@
+{
+  "type": "porting_lib:conditional",
+  "recipes": [
+    {
+      "fabric:load_conditions": [
+        {
+          "condition": "mantelcats:feature_enabled",
+          "feature": "mantelcats:copycat_vertical_step",
+          "invert": false
+        }
+      ],
+      "recipe": {
+        "type": "minecraft:stonecutting",
+        "count": 4,
+        "ingredient": {
+          "tag": "c:zinc_ingots"
+        },
+        "result": "mantelcats:copycat_vertical_step"
+      }
+    }
+  ]
+}

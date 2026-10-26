@@ -1,0 +1,36 @@
+{
+  "type": "porting_lib:conditional",
+  "recipes": [
+    {
+      "fabric:load_conditions": [
+        {
+          "condition": "mantelcats:feature_enabled",
+          "feature": "mantelcats:copycat_block",
+          "invert": false
+        },
+        {
+          "condition": "mantelcats:feature_enabled",
+          "feature": "mantelcats:copycat_slab",
+          "invert": false
+        }
+      ],
+      "recipe": {
+        "type": "minecraft:crafting_shaped",
+        "category": "misc",
+        "key": {
+          "s": {
+            "tag": "mantelcats:copycat_slab"
+          }
+        },
+        "pattern": [
+          "s",
+          "s"
+        ],
+        "result": {
+          "item": "mantelcats:copycat_block"
+        },
+        "show_notification": true
+      }
+    }
+  ]
+}

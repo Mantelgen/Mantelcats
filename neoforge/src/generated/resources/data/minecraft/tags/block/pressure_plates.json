@@ -1,8 +1,8 @@
 {
   "values": [
-    "copycats:copycat_wooden_pressure_plate",
-    "copycats:copycat_stone_pressure_plate",
-    "copycats:copycat_heavy_weighted_pressure_plate",
-    "copycats:copycat_light_weighted_pressure_plate"
+    "mantelcats:copycat_wooden_pressure_plate",
+    "mantelcats:copycat_stone_pressure_plate",
+    "mantelcats:copycat_heavy_weighted_pressure_plate",
+    "mantelcats:copycat_light_weighted_pressure_plate"
   ]
 }

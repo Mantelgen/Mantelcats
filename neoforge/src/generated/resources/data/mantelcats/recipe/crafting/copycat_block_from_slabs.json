@@ -1,0 +1,29 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "mantelcats:feature_enabled",
+      "feature": "mantelcats:copycat_block",
+      "invert": false
+    },
+    {
+      "type": "mantelcats:feature_enabled",
+      "feature": "mantelcats:copycat_slab",
+      "invert": false
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "s": {
+      "tag": "mantelcats:copycat_slab"
+    }
+  },
+  "pattern": [
+    "s",
+    "s"
+  ],
+  "result": {
+    "count": 1,
+    "id": "mantelcats:copycat_block"
+  }
+}

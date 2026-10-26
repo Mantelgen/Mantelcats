@@ -1,0 +1,17 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "mantelcats:feature_enabled",
+      "feature": "mantelcats:copycat_slope",
+      "invert": false
+    }
+  ],
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "tag": "c:ingots/zinc"
+  },
+  "result": {
+    "count": 2,
+    "id": "mantelcats:copycat_slope"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "type": "porting_lib:conditional",
+  "recipes": [
+    {
+      "fabric:load_conditions": [
+        {
+          "condition": "mantelcats:feature_enabled",
+          "feature": "mantelcats:copycat_folding_door",
+          "invert": false
+        },
+        {
+          "condition": "mantelcats:feature_enabled",
+          "feature": "mantelcats:copycat_sliding_door",
+          "invert": false
+        }
+      ],
+      "recipe": {
+        "type": "minecraft:crafting_shapeless",
+        "category": "misc",
+        "ingredients": [
+          {
+            "item": "mantelcats:copycat_folding_door"
+          }
+        ],
+        "result": {
+          "item": "mantelcats:copycat_sliding_door"
+        }
+      }
+    }
+  ]
+}
