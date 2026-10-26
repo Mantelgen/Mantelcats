@@ -10,6 +10,11 @@ this fork only hardens the code around them.
 
 **Target environment:** Minecraft 1.21.1 · NeoForge · Create 6.x
 
+> **Breaking change (4.0.0):** the registry namespace and mod id are now
+> `mantelcats` — every `copycats:*` block/item id moved to `mantelcats:*`.
+> Upgrading removes all previously placed copycat content from existing worlds;
+> this fork is intended for fresh installs/new worlds. No migration is provided.
+
 ## What this fork fixes
 
 All of the following have been verified in-game on a live NeoForge server and client:

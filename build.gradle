@@ -50,7 +50,7 @@ subprojects {
         repositories {
             maven {
                 name = "GitHubPackages"
-                url = "https://maven.pkg.github.com/copycats-plus/copycats"
+                url = "https://maven.pkg.github.com/Mantelgen/Mantelcats"
                 credentials {
                     username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
                     password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
@@ -178,7 +178,7 @@ allprojects {
     }
 
     jar {
-        processResources.exclude("assets/copycats/models/block/copycat_base/README.md")
+        processResources.exclude("assets/mantelcats/models/block/copycat_base/README.md")
     }
 
     tasks.named('processResources', ProcessResources).configure {

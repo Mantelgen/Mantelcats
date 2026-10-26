@@ -12,7 +12,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Changes below this section are the upstream Copycats+ history, preserved for
 provenance. Mantelcats tracks upstream `multiloader` plus the fixes listed here.
 
-## Unreleased
+## 4.0.0 - 2026-10-26
+
+### ⚠ BREAKING CHANGES
+
+- **Registry namespace renamed `copycats` → `mantelcats`.** Every block, item,
+  block entity, creative tab, cat variant, recipe, loot table, advancement, tag
+  entry and recipe-condition type that was registered under `copycats:*` is now
+  `mantelcats:*` (e.g. `copycats:copycat_beam` → `mantelcats:copycat_beam`).
+  The mod id in `fabric.mod.json`/`neoforge.mods.toml` is now `mantelcats`.
+  **Existing worlds lose all previously placed copycat blocks and items** — this
+  release is intended for fresh installs/new worlds; no migration aliases are
+  provided. Datapacks, resource packs, KubeJS scripts and other mods referencing
+  `copycats:*` ids must be updated to `mantelcats:*`.
+- **Java package and Maven coordinates renamed.** `com.copycatsplus.copycats` →
+  `com.mantelgen.mantelcats`, Maven group `com.copycatsplus` →
+  `com.mantelgen.mantelcats`, jar base name `copycats-*` → `mantelcats-*`.
+  Mods integrating against the API must update imports and coordinates.
+- Config files move from `copycats-*.toml` to `mantelcats-*.toml`; previous
+  config values are not carried over.
+- The `create` namespace and all other mods' namespaces are unchanged.
 
 ### Fixed
 
@@ -49,8 +68,8 @@ provenance. Mantelcats tracks upstream `multiloader` plus the fixes listed here.
   on write and dropped on read (migrating poisoned data on first load), and all
   material access goes through `getMaterialItemOrNull`/`getMaterialItemOrDefault`
 - Rebranded mod metadata to Mantelcats (display name, description, authors,
-  issue tracker, homepage, update JSON). The mod id stays `copycats` so existing
-  worlds, datapacks and material data keep working
+  issue tracker, homepage, update JSON). The registry namespace and mod id are
+  now `mantelcats` — see BREAKING CHANGES above
 
 ---
 

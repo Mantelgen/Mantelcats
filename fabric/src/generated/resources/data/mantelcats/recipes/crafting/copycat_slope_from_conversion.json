@@ -1,0 +1,31 @@
+{
+  "type": "porting_lib:conditional",
+  "recipes": [
+    {
+      "fabric:load_conditions": [
+        {
+          "condition": "mantelcats:feature_enabled",
+          "feature": "mantelcats:copycat_vertical_slope",
+          "invert": false
+        },
+        {
+          "condition": "mantelcats:feature_enabled",
+          "feature": "mantelcats:copycat_slope",
+          "invert": false
+        }
+      ],
+      "recipe": {
+        "type": "minecraft:crafting_shapeless",
+        "category": "misc",
+        "ingredients": [
+          {
+            "item": "mantelcats:copycat_vertical_slope"
+          }
+        ],
+        "result": {
+          "item": "mantelcats:copycat_slope"
+        }
+      }
+    }
+  ]
+}

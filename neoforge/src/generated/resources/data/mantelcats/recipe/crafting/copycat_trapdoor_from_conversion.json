@@ -1,0 +1,25 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "mantelcats:feature_enabled",
+      "feature": "create:copycat_panel",
+      "invert": false
+    },
+    {
+      "type": "mantelcats:feature_enabled",
+      "feature": "mantelcats:copycat_trapdoor",
+      "invert": false
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "create:copycat_panel"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "mantelcats:copycat_trapdoor"
+  }
+}

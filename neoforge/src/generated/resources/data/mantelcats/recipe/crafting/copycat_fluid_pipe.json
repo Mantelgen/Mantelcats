@@ -1,0 +1,32 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "mantelcats:feature_enabled",
+      "feature": "mantelcats:copycat_fluid_pipe",
+      "invert": false
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "create:fluid_pipe"
+    },
+    {
+      "item": "create:fluid_pipe"
+    },
+    {
+      "item": "create:fluid_pipe"
+    },
+    {
+      "item": "create:fluid_pipe"
+    },
+    {
+      "item": "create:zinc_ingot"
+    }
+  ],
+  "result": {
+    "count": 4,
+    "id": "mantelcats:copycat_fluid_pipe"
+  }
+}

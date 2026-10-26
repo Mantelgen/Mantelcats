@@ -1,0 +1,8 @@
+{
+  "selector": "mantelcats:copycat_half_panel",
+
+  "properties": {
+    "sable:mass": 0.0,
+    "sable:volume": 0.0
+  }
+}

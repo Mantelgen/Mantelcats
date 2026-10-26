@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "copycats",
+  "id": "mantelcats",
   "version": "${version}",
   "name": "${mod_name}",
   "description": "${mod_description}",
@@ -9,28 +9,28 @@
   ],
   "contact": {},
   "license": "${mod_license}",
-  "icon": "copycats_icon.png",
+  "icon": "mantelcats_icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.copycatsplus.copycats.fabric.CopycatsImpl"
+      "com.mantelgen.mantelcats.fabric.CopycatsImpl"
     ],
     "client": [
-      "com.copycatsplus.copycats.fabric.CopycatsClientImpl"
+      "com.mantelgen.mantelcats.fabric.CopycatsClientImpl"
     ],
     "fabric-datagen": [
-      "com.copycatsplus.copycats.datagen.fabric.CCDatagenImpl"
+      "com.mantelgen.mantelcats.datagen.fabric.CCDatagenImpl"
     ],
     "jei_mod_plugin": [
-      "com.copycatsplus.copycats.compat.recipe_viewers.CopycatsJEI"
+      "com.mantelgen.mantelcats.compat.recipe_viewers.CopycatsJEI"
     ],
     "additional-placements-generators": [
-      "com.copycatsplus.copycats.compat.AdditionalPlacementsCompat"
+      "com.mantelgen.mantelcats.compat.AdditionalPlacementsCompat"
     ]
   },
   "mixins": [
-    "copycats-fabric.mixins.json",
-    "copycats-common.mixins.json"
+    "mantelcats-fabric.mixins.json",
+    "mantelcats-common.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.15.7",
