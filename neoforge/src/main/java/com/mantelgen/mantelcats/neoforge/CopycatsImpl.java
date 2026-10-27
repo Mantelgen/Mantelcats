@@ -29,6 +29,7 @@ public class CopycatsImpl {
 
         modBus.addListener(EventPriority.HIGHEST, CCDatagenImpl::gatherDataHighPriority);
         modBus.addListener(EventPriority.LOWEST, CCDatagenImpl::gatherData);
+        modBus.addListener(LegacyIdMigration::onCommonSetup);
         Mods.ADDITIONAL_PLACEMENTS.executeIfInstalled(() -> AdditionalPlacementsCompatNeoForge::register);
     }
 
